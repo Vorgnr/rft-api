@@ -8,7 +8,34 @@
 
 ` npm i `
 ` touch config.js `
+
+```js
+module.exports = {
+  database: {
+    development: {
+      host: 'localhost',
+      port: '3306',
+      user: 'rft',
+      password: '******',
+      database: 'rft_mariadb',
+    },
+    test: {
+      host: 'localhost',
+      port: '3306',
+      user: 'root',
+      password: '******',
+      database: 'rftdb',
+    },
+  },
+};
+```
+
 ` touch .env `
+
+```
+PORT=3000
+NODE_ENV=development
+```
 
 ### Database
 
