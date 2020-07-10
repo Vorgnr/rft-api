@@ -11,14 +11,16 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema rftdb
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `rftdb`;
 CREATE SCHEMA IF NOT EXISTS `rftdb` DEFAULT CHARACTER SET utf8 ;
 USE `rftdb` ;
+
 
 -- -----------------------------------------------------
 -- Table `rftdb`.`player`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
-  `id` INT NOT NULL,
+  `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
   `avatar` VARCHAR(45) NULL,
   `status` VARCHAR(45) NULL,
@@ -32,7 +34,7 @@ ENGINE = InnoDB;
 -- Table `rftdb`.`league`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
-  `id` INT NOT NULL,
+  `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
   `starting_elo` INT NULL,
   PRIMARY KEY (`id`))
@@ -43,10 +45,10 @@ ENGINE = InnoDB;
 -- Table `rftdb`.`elo`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
-  `id` INT NOT NULL,
+  `id` VARCHAR(36) NOT NULL,
   `value` INT NULL,
-  `league_id` INT NOT NULL,
-  `player_id` INT NOT NULL,
+  `league_id` VARCHAR(36) NOT NULL,
+  `player_id` VARCHAR(36) NOT NULL,
   PRIMARY KEY (`id`, `league_id`, `player_id`),
   INDEX `fk_elo_league_idx` (`league_id` ASC) VISIBLE,
   INDEX `fk_elo_player1_idx` (`player_id` ASC) VISIBLE,
@@ -67,14 +69,14 @@ ENGINE = InnoDB;
 -- Table `rftdb`.`match`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
-  `id` INT NOT NULL,
+  `id` VARCHAR(36) NOT NULL,
   `character1` VARCHAR(45) NULL,
   `character2` VARCHAR(45) NULL,
   `ft` INT NULL,
   `status` VARCHAR(45) NULL,
-  `league_id` INT NOT NULL,
-  `player1_id` INT NOT NULL,
-  `player2_id` INT NOT NULL,
+  `league_id` VARCHAR(36) NOT NULL,
+  `player1_id` VARCHAR(36) NOT NULL,
+  `player2_id` VARCHAR(36) NOT NULL,
   `player1_elo` VARCHAR(45) NULL,
   `player2_elo` VARCHAR(45) NULL,
   `player1_score` INT NULL,
