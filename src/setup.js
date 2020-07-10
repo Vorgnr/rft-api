@@ -5,7 +5,7 @@ const Repository = require('./repository');
 const Player = require('./models/player');
 const PlayerController = require('./controllers/player-controller');
 
-const dblog = debug('database');
+const dblog = debug('rft:database');
 
 const getKnex = async (config) => {
   const dbInstance = knex({
@@ -30,7 +30,10 @@ const setup = async (config) => {
   const playerRepo = new Repository(dbInstance, Player);
 
   return {
-    PlayerController: new PlayerController({ repository: playerRepo }),
+    Controllers: {
+      PlayerController: new PlayerController({ repository: playerRepo }),
+    },
+    knex: dbInstance
   };
 };
 

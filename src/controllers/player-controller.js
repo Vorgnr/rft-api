@@ -4,7 +4,8 @@ class PlayerController {
   }
 
   async create(body) {
-    return this.repository.create(body);
+    const player = await this.repository.create(body);
+    return player.toJson();
   }
 }
 

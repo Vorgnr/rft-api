@@ -1,10 +1,12 @@
 const express = require('express');
-const debug = require('debug')('server');
+const debug = require('debug')('rft:server');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 
 const config = require('./config');
 const setup = require('./src/setup');
 const routes = require('./src/routes');
+let app = express();
 
 dotenv.config();
 
@@ -14,9 +16,11 @@ const env = process.env.NODE_ENV;
 module.exports = {
   start: async () => {
     debug('Server preparing %s using port %d...', env, port);
-    const Controllers = await setup(config.database[env]);
+    const { knex, Controllers } = await setup(config.database[env]);
     debug('%d Controllers ok ...', Object.keys(Controllers).length);
-    const app = express();
+
+    app.use(bodyParser.urlencoded());
+    app.use(bodyParser.json());
 
     Object.keys(routes).forEach((path) => {
       const handler = routes[path];
@@ -24,10 +28,16 @@ module.exports = {
     });
 
     return new Promise((resolve) => {
-      app.listen(port, () => {
+      app = app.listen(port, () => {
         debug('RFT Api listening port %d', port);
-        resolve();
+        resolve(knex);
       });
     });
   },
+
+  stop() {
+    debug('Server manual close');
+    app.close();
+    process.exit(0);
+  }
 };

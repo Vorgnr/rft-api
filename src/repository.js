@@ -1,4 +1,4 @@
-const debug = require('debug')('repository');
+const debug = require('debug')('rft:repository');
 
 class Repository {
   constructor(knex, model) {
@@ -8,12 +8,13 @@ class Repository {
 
   async create(body) {
     debug('%s create() request', this.Model.modelName);
+    const model = new this.Model(body);
+    const toSave = model.toJson();
     const raw = await this.knex(this.Model.modelName)
-      .insert(body);
+      .insert(toSave)
 
-    return raw;
-
-    return new this.Model(raw);
+    debug('create() response %j', model);
+    return model;
   }
 }
 
