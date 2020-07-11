@@ -2,7 +2,8 @@ const should = require('should/as-function');
 
 describe('Player API', () => {
   describe('POST /players', () => {
-    before(async () => global.test.knex('player').del());
+    before(async () => global.test.clear());
+
     it('should create a player', async () => {
       const body = { email: 'foo@rft.com' };
       const request = await global.test.axios.post('/players', { email: 'foo@rft.com' });
@@ -16,7 +17,7 @@ describe('Player API', () => {
   });
 
   describe('GET /players/:playerId', () => {
-    before(async () => global.test.knex('player').del());
+    before(async () => global.test.clear());
 
     describe('when player does not exist', () => {
       it('should return a 404 error', async () => {
@@ -31,9 +32,7 @@ describe('Player API', () => {
     });
 
     const player = { id: 'foobar', email: 'kalak@gmail.com' };
-    before(async () => global.test
-      .knex('player')
-      .insert(player));
+    before(async () => global.test.knex('player').insert(player));
 
     it('should get a player', async () => {
       const request = await global.test.axios.get(`/players/${player.id}`);
@@ -45,7 +44,7 @@ describe('Player API', () => {
   });
 
   describe('PUT /players/:playerId', () => {
-    before(async () => global.test.knex('player').del());
+    before(async () => global.test.clear());
     describe('when player doest not exist', () => {
       it('should return a 404 error', async () => {
         await global.test.axios.put('/players/bla', {})

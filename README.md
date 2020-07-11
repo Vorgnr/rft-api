@@ -1,28 +1,22 @@
 # RFT API
-
 ## API
 
 ### Players
-
 - [x] **POST** `/players/`
 - [x] **GET** `/players/:playerId`
 - [x] **PUT** `/players/:playerId`
 
 ### Leagues
-
 - [x] **POST** `/leagues/`
 - [x] **GET** `/leagues/:leagueId`
 - [x] **PUT** `/leagues/:leagueId`
 
 ### Matches
-
 - [ ] **POST** `/matches/`
 - [ ] **GET** `/matches/:matchId`
 - [ ] **PUT** `/matches/:matchId`
 
-
 ## Setup
-
 * node v14+
 
 ` npm i `

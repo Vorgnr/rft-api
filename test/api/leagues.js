@@ -40,7 +40,6 @@ describe('League API', () => {
       should(request).have.property('status', 200);
       should(request.data).have.property('id', league.id);
       should(request.data).have.property('name', league.name);
-      should(request.data).not.have.property('password');
     });
   });
 
@@ -67,7 +66,6 @@ describe('League API', () => {
       should(request).have.property('status', 200);
       should(request.data).have.property('id');
       should(request.data).have.property('name', 'Alfa v3');
-      should(request.data).not.have.property('password');
     });
   });
 });
