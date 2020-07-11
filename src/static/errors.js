@@ -11,7 +11,14 @@ class NotFoundError extends HttpError {
   }
 }
 
+class BadRequestError extends HttpError {
+  constructor(message) {
+    super({ message, status: 403 });
+  }
+}
+
 module.exports = {
   NotFoundError,
   HttpError,
+  BadRequestError,
 };
