@@ -4,15 +4,22 @@
 
 ### Players
 
-* POST /players/
-* GET /players/:playerId
-* PUT /players/:playerId
+- [x] **POST** `/players/`
+- [x] **GET** `/players/:playerId`
+- [x] **PUT** `/players/:playerId`
 
 ### Leagues
 
-* POST /leagues/
-* GET /leagues/:leagueId
-* PUT /leagues/:leagueId
+- [x] **POST** `/leagues/`
+- [x] **GET** `/leagues/:leagueId`
+- [x] **PUT** `/leagues/:leagueId`
+
+### Matches
+
+- [ ] **POST** `/matches/`
+- [ ] **GET** `/matches/:matchId`
+- [ ] **PUT** `/matches/:matchId`
+
 
 ## Setup
 
