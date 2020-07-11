@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
   `status` VARCHAR(45) NULL,
   `email` VARCHAR(45) NULL,
   `password` VARCHAR(45) NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -37,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
   `starting_elo` INT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -49,6 +51,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
   `value` INT NULL,
   `league_id` VARCHAR(36) NOT NULL,
   `player_id` VARCHAR(36) NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`, `league_id`, `player_id`),
   INDEX `fk_elo_league_idx` (`league_id` ASC) VISIBLE,
   INDEX `fk_elo_player1_idx` (`player_id` ASC) VISIBLE,
@@ -81,6 +84,10 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
   `player2_elo` VARCHAR(45) NULL,
   `player1_score` INT NULL,
   `player2_score` INT NULL,
+  `player1_ragequit` BOOLEAN DEFAULT FALSE,
+  `player2_ragequit` BOOLEAN DEFAULT FALSE,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `completed_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`, `league_id`, `player1_id`, `player2_id`),
   INDEX `fk_match_league1_idx` (`league_id` ASC) VISIBLE,
   INDEX `fk_match_player1_idx` (`player1_id` ASC) VISIBLE,
@@ -101,7 +108,6 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
