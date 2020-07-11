@@ -31,7 +31,7 @@ const setup = async (config) => {
 
   return {
     Controllers: {
-      PlayerController: new PlayerController({ repository: playerRepo }),
+      PlayerController: new PlayerController({ repository: playerRepo, model: Player }),
     },
     knex: dbInstance,
   };
