@@ -8,6 +8,12 @@
 * GET /players/:playerId
 * PUT /players/:playerId
 
+### Leagues
+
+* POST /leagues/
+* GET /leagues/:leagueId
+* PUT /leagues/:leagueId
+
 ## Setup
 
 * node v14+
