@@ -12,9 +12,15 @@
 - [x] **PUT** `/leagues/:leagueId`
 
 ### Matches
-- [ ] **POST** `/matches/`
-- [ ] **GET** `/matches/:matchId`
-- [ ] **PUT** `/matches/:matchId`
+- [x] **POST** `/matches/`
+- [x] **GET** `/matches/:matchId`
+- [x] **PUT** `/matches/:matchId`
+
+#### Logique Elo
+
+- [ ] Dés que le score atteint le FT -> Match complété
+- [ ] Calcul des points
+- [ ] Prise en comptes des ragequit
 
 ## Setup
 * node v14+
