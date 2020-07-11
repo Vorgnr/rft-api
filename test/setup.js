@@ -8,7 +8,3 @@ before(async () => {
     axios: axios.create(),
   };
 });
-
-after(() => {
-  server.stop();
-});

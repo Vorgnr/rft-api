@@ -28,6 +28,12 @@ module.exports = {
       app.use(path, handler(Controllers));
     });
 
+    app.use((err, req, res, next) => {
+      debug('Internal server error %j', err);
+      res.status(500).send('Internal server error');
+      next();
+    });
+
     return new Promise((resolve) => {
       app = app.listen(port, () => {
         debug('RFT Api listening port %d', port);
