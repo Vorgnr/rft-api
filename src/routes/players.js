@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { HttpError } = require('../static/errors');
+const { errorHander } = require('../utils/response');
 
 const players = (controllers) => {
   router.post('/', async (req, res, next) => {
@@ -13,9 +13,7 @@ const players = (controllers) => {
       const player = await controllers.PlayerController.get(req.params.playerId);
       res.json(player);
     } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status).send({ error: error.message });
-      }
+      errorHander(error, res);
     }
     next();
   });
@@ -25,9 +23,7 @@ const players = (controllers) => {
       const player = await controllers.PlayerController.update(req.params.playerId, req.body);
       res.json(player);
     } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status).send({ error: error.message });
-      }
+      errorHander(error, res);
     }
     next();
   });
