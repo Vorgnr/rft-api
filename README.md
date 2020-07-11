@@ -1,10 +1,16 @@
 # RFT API
 
-## Prerequisites
+## API
 
-* node v14+
+### Players
+
+* POST /players/
+* GET /players/:playerId
+* PUT /players/:playerId
 
 ## Setup
+
+* node v14+
 
 ` npm i `
 ` touch config.js `
@@ -53,11 +59,3 @@ docker exec -i rft_mariadb sh -c 'exec mysql -uroot -p"password"' < PATH/to/sche
 
 * `npm start`
 * `npm t`
-
-### API
-
-#### Players
-
-* POST /players/
-* GET /players/:playerId
-* PUT /players/:playerId
