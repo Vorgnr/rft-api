@@ -1,18 +1,24 @@
 const { v4: uuidv4 } = require('uuid');
-const { pick } = require('../utils/object')
+const { pick } = require('../utils/object');
+
 class BaseModel {
-  constructor(body = {}) {
-    Object.assign(this, pick(body, this.constructor.schema))
-    this._id = body.id || uuidv4();
+  static get schema() {
+    return [];
   }
 
-  get id() {
-    return this._id;
+  static get readSchema() {
+    return [];
+  }
+
+  constructor(body = {}) {
+    Object.assign(this, pick(body, this.constructor.schema));
+    if (!this.id) {
+      this.id = uuidv4();
+    }
   }
 
   toJson() {
-    const ob = pick(this, this.constructor.schema);
-    return { id: this.id, ...ob } 
+    return pick(this, this.constructor.schema);
   }
 }
 
