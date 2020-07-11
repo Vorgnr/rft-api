@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const config = require('./config');
 const setup = require('./src/setup');
 const routes = require('./src/routes');
+
 let app = express();
 
 dotenv.config();
@@ -39,5 +40,5 @@ module.exports = {
     debug('Server manual close');
     app.close();
     process.exit(0);
-  }
+  },
 };
