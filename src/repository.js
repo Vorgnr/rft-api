@@ -7,12 +7,12 @@ class Repository {
   }
 
   async get(id) {
-    debug('%s get() request', this.Model.modelName);
+    debug('%s get(%s) request', this.Model.modelName, id);
     const model = await this.knex(this.Model.modelName)
       .where({ id })
       .select(this.Model.readSchema);
 
-    debug('get() response %j', model);
+    debug('get(%s) response %j', id, model);
     if (model[0]) {
       return new this.Model(model[0]);
     }
@@ -31,11 +31,11 @@ class Repository {
   }
 
   async update(id, body) {
-    debug('%s update() request', this.Model.modelName);
+    debug('%s update(%s) request %j', this.Model.modelName, id, body);
     const model = new this.Model({ id, ...body });
     await this.knex(this.Model.modelName)
       .where({ id })
-      .update(body);
+      .update(model.toUpdateJson());
 
     debug('update() response %j', model);
     return model;
