@@ -17,13 +17,20 @@ class BaseController {
 
   async update(id, body) {
     await this.get(id);
-    const updated = await this.repository.update(id, body);
-    return updated.toJson();
+    return this.repository.update(id, body);
   }
 
   async create(body) {
     const entity = await this.repository.create(body);
     return entity.toJson();
+  }
+
+  async list({
+    filters, page, perPage, orderBy,
+  }) {
+    return this.repository.list({
+      filters, page, perPage, orderBy,
+    });
   }
 }
 
