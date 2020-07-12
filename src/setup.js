@@ -35,11 +35,19 @@ const setup = async (config) => {
   const leagueRepo = new Repository(dbInstance, League);
   const matchRepo = new Repository(dbInstance, Match);
 
+  const playerController = new PlayerController({ repository: playerRepo, model: Player });
+
   return {
     Controllers: {
-      PlayerController: new PlayerController({ repository: playerRepo, model: Player }),
+      PlayerController: playerController,
       LeagueController: new LeagueController({ repository: leagueRepo, model: League }),
-      MatchController: new MatchController({ repository: matchRepo, model: Match }),
+      MatchController: new MatchController({
+        repository: matchRepo,
+        model: Match,
+        controllers: {
+          PlayerController: playerController,
+        },
+      }),
     },
     knex: dbInstance,
   };

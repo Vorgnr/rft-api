@@ -1,9 +1,10 @@
 const { NotFoundError } = require('../static/errors');
 
 class BaseController {
-  constructor({ repository, model }) {
+  constructor({ repository, model, controllers = {} }) {
     this.repository = repository;
     this.Model = model;
+    this.controllers = controllers;
   }
 
   async get(id) {
