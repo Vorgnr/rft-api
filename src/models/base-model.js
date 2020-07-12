@@ -26,8 +26,8 @@ class BaseModel {
       .filter((k) => this.internalKeys.indexOf(k) === -1);
   }
 
-  toUpdateJson() {
-    return pick(this, this.constructor.updateSchema);
+  static toUpdateJson(instance) {
+    return pick(instance, this.updateSchema);
   }
 
   toJson() {

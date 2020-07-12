@@ -32,13 +32,32 @@ class Repository {
 
   async update(id, body) {
     debug('%s update(%s) request %j', this.Model.modelName, id, body);
-    const model = new this.Model({ id, ...body });
+    const model = { id, ...body };
     await this.knex(this.Model.modelName)
       .where({ id })
-      .update(model.toUpdateJson());
+      .update(this.Model.toUpdateJson({ id, ...body }));
 
     debug('update() response %j', model);
     return model;
+  }
+
+  async list({
+    filters, page = 1, perPage, orderBy,
+  }) {
+    debug('%s list with filters %j page %d perPage %d request', this.Model.modelName, filters, page, perPage);
+    const query = this.knex(this.Model.modelName)
+      .where(filters);
+
+    if (orderBy) {
+      query.orderBy(orderBy);
+    }
+
+    if (perPage) {
+      query
+        .offset((page - 1) * perPage)
+        .limit(perPage);
+    }
+    return query;
   }
 }
 
