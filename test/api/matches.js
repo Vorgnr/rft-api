@@ -11,12 +11,31 @@ describe('Match API', () => {
         player1_id: 'Knee',
         player2_id: 'Qudans',
         league_id: 'ISL',
+        ft: 10,
       };
       const request = await global.test.axios.post('/matches', body);
       should(request).have.property('status', 200);
       const matches = await global.test.knex('match').select('*');
       should(matches).be.an.Array()
         .with.lengthOf(1);
+    });
+
+    describe('when ft is not correct', () => {
+      it('should return a 403 error', async () => {
+        const body = {
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          ft: 0,
+        };
+        await global.test.axios.post('/matches', body)
+          .then(() => {
+            throw new Error('Unexpected promise resolution');
+          })
+          .catch((err) => {
+            should(err.response).have.property('status', 403);
+          });
+      });
     });
   });
 
@@ -44,6 +63,7 @@ describe('Match API', () => {
         player1_id: 'Knee',
         player2_id: 'Qudans',
         league_id: 'ISL',
+        ft: 10,
       });
 
       const request = await global.test.axios.get('/matches/nicematch');
@@ -77,6 +97,7 @@ describe('Match API', () => {
         player1_id: 'Knee',
         player2_id: 'Qudans',
         league_id: 'ISL',
+        ft: 10,
       });
       const request = await global.test.axios.put('/matches/nicematch', { player1_score: 10, player2_score: 6 });
       should(request).have.property('status', 200);
