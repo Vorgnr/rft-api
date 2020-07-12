@@ -2,7 +2,7 @@ const should = require('should/as-function');
 
 describe('League API', () => {
   describe('POST /leagues', () => {
-    before(async () => global.test.knex('league').del());
+    before(async () => global.test.clear());
     it('should create a league', async () => {
       const body = { name: 'RFT One' };
       const request = await global.test.axios.post('/leagues', body);
@@ -16,7 +16,7 @@ describe('League API', () => {
   });
 
   describe('GET /leagues/:leagueId', () => {
-    before(async () => global.test.knex('league').del());
+    before(async () => global.test.clear());
 
     describe('when league does not exist', () => {
       it('should return a 404 error', async () => {
@@ -44,7 +44,7 @@ describe('League API', () => {
   });
 
   describe('PUT /leagues/:leagueId', () => {
-    before(async () => global.test.knex('league').del());
+    before(async () => global.test.clear());
     describe('when league doest not exist', () => {
       it('should return a 404 error', async () => {
         await global.test.axios.put('/leagues/bla', {})
