@@ -16,6 +16,9 @@
 - [x] **GET** `/matches/:matchId`
 - [x] **PUT** `/matches/:matchId`
 
+### Elo
+- [x] **GET** `/matches/list`
+
 #### Logique Elo
 
 - [ ] Dés que le score atteint le FT -> Match complété
