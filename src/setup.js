@@ -5,9 +5,11 @@ const Repository = require('./repository');
 const Player = require('./models/player');
 const League = require('./models/league');
 const Match = require('./models/match');
+const Elo = require('./models/elo');
 const PlayerController = require('./controllers/player-controller');
 const LeagueController = require('./controllers/league-controller');
 const MatchController = require('./controllers/match-controller');
+const EloController = require('./controllers/elo-controller');
 
 const dblog = debug('rft:database');
 
@@ -34,18 +36,23 @@ const setup = async (config) => {
   const playerRepo = new Repository(dbInstance, Player);
   const leagueRepo = new Repository(dbInstance, League);
   const matchRepo = new Repository(dbInstance, Match);
+  const eloRepo = new Repository(dbInstance, Elo);
 
   const playerController = new PlayerController({ repository: playerRepo, model: Player });
+  const leagueController = new LeagueController({ repository: leagueRepo, model: League });
+  const eloController = new EloController({ repository: eloRepo, model: Elo });
 
   return {
     Controllers: {
       PlayerController: playerController,
-      LeagueController: new LeagueController({ repository: leagueRepo, model: League }),
+      LeagueController: leagueController,
+      EloController: eloController,
       MatchController: new MatchController({
         repository: matchRepo,
         model: Match,
         controllers: {
-          PlayerController: playerController,
+          EloController: eloController,
+          LeagueController: leagueController,
         },
       }),
     },
