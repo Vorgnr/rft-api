@@ -19,7 +19,6 @@ class Match extends BaseModel {
   }
 
   validMatch() {
-    console.log('this.ft', this.ft);
     const ft = validScore(this.ft);
     if (ft === false || ft === 0) {
       throw new BadRequestError('Match ft must be positive integer');
@@ -52,7 +51,6 @@ class Match extends BaseModel {
 
   complete() {
     this.completed_at = Date.now();
-    this.isCompleted = true;
   }
 
   static get modelName() {

@@ -37,7 +37,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
-  `starting_elo` INT NULL,
+  `starting_elo` INT NOT NULL DEFAULT 0,
   `ragequit_penalty` INT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
