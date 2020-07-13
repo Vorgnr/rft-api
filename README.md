@@ -17,7 +17,7 @@
 - [x] **PUT** `/matches/:matchId`
 
 ### Elo
-- [x] **GET** `/matches/list`
+- [x] **GET** `/elos/list`
 
 #### Logique Elo
 
