@@ -38,7 +38,10 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
   `starting_elo` INT NOT NULL DEFAULT 0,
-  `ragequit_penalty` INT NULL,
+  `winning_base_elo` INT NOT NULL DEFAULT 0,
+  `losing_base_elo` INT NOT NULL DEFAULT 0,
+  `ragequit_penalty` INT NOT NULL DEFAULT 0,
+  `rank_treshold` INT NOT NULL DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -88,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
   `player1_ragequit` BOOLEAN DEFAULT FALSE,
   `player2_ragequit` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `completed_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `completed_at` DATETIME NULL,
   PRIMARY KEY (`id`, `league_id`, `player1_id`, `player2_id`),
   INDEX `fk_match_league1_idx` (`league_id` ASC) VISIBLE,
   INDEX `fk_match_player1_idx` (`player1_id` ASC) VISIBLE,

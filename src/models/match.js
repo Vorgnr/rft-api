@@ -43,7 +43,7 @@ class Match extends BaseModel {
         if (score1 === score2) {
           throw new BadRequestError('Players scores can not both reach match ft');
         } else {
-          this.complete(score1, score2);
+          this.complete();
         }
       }
     }
@@ -51,6 +51,32 @@ class Match extends BaseModel {
 
   complete() {
     this.completed_at = Date.now();
+  }
+
+  getResults() {
+    if (!this.completed_at) {
+      return false;
+    }
+
+    const player1 = {
+      id: this.player1_id,
+      isPlayer1: true,
+      score: this.player1_score,
+      ragequit: this.player1_ragequit,
+    };
+
+    const player2 = {
+      id: this.player2_id,
+      isPlayer1: false,
+      score: this.player2_score,
+      ragequit: this.player2_ragequit,
+    };
+
+    if (this.player2_ragequit || this.player1_score > this.player2_score) {
+      return { winner: player1, loser: player2 };
+    }
+
+    return { winner: player2, loser: player1 };
   }
 
   static get modelName() {
@@ -73,6 +99,7 @@ class Match extends BaseModel {
       'player2_score',
       'player1_ragequit',
       'player2_ragequit',
+      'completed_at',
     ];
   }
 

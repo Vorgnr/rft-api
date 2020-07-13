@@ -75,7 +75,19 @@ describe('Match API', () => {
   });
 
   describe('PUT /matches/:matchId', () => {
-    before(async () => global.test.clear());
+    before(async () => {
+      await global.test.clear();
+      await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
+      await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans' });
+      await global.test.knex('league').insert({
+        id: 'ISL',
+        name: 'International Superstar League',
+        winning_base_elo: 700,
+        losing_base_elo: 700,
+        rank_treshold: 1000,
+        starting_elo: 2000,
+      });
+    });
     describe('when match doest not exist', () => {
       it('should return a 404 error', async () => {
         await global.test.axios.put('/matches/bla', {})
@@ -88,22 +100,58 @@ describe('Match API', () => {
       });
     });
 
-    it('should update match', async () => {
-      await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
-      await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans' });
-      await global.test.knex('league').insert({ id: 'ISL', name: 'International Superstar League' });
-      await global.test.knex('match').insert({
-        id: 'nicematch',
-        player1_id: 'Knee',
-        player2_id: 'Qudans',
-        league_id: 'ISL',
-        ft: 10,
+    describe('when match is completed', () => {
+      it('should update match', async () => {
+        await global.test.knex('match').insert({
+          id: 'nicematch',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          ft: 10,
+        });
+        const request = await global.test.axios.put('/matches/nicematch', { player1_score: 10, player2_score: 6 });
+        should(request).have.property('status', 200);
+        should(request.data).have.property('id');
+        should(request.data).have.property('completed_at').which.is.not.null();
+        should(request.data).have.property('player1_score', 10);
+        should(request.data).have.property('player1_elo', 233);
+        should(request.data).have.property('player2_score', 6);
+        should(request.data).have.property('player2_elo', -233);
       });
-      const request = await global.test.axios.put('/matches/nicematch', { player1_score: 10, player2_score: 6 });
-      should(request).have.property('status', 200);
-      should(request.data).have.property('id');
-      should(request.data).have.property('player1_score', 10);
-      should(request.data).have.property('player2_score', 6);
+
+      it('should write Elo', async () => {
+        const kneeElo = await global.test.knex('elo')
+          .where({ player_id: 'Knee', league_id: 'ISL' });
+
+        should(kneeElo).be.an.Array().with.lengthOf(1);
+        should(kneeElo[0]).have.property('value', 2233);
+
+        const qudansElo = await global.test.knex('elo')
+          .where({ player_id: 'Qudans', league_id: 'ISL' });
+
+        should(qudansElo).be.an.Array().with.lengthOf(1);
+        should(qudansElo[0]).have.property('value', 1767);
+      });
+    });
+
+    describe('when match is not completed', () => {
+      it('should update match', async () => {
+        await global.test.knex('match').insert({
+          id: '2',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          ft: 10,
+        });
+        const request = await global.test.axios.put('/matches/2', { player1_score: 6, player2_score: 6 });
+        should(request).have.property('status', 200);
+        should(request.data).have.property('id');
+        should(request.data).have.property('completed_at', null);
+        should(request.data).have.property('player1_score', 6);
+        should(request.data).have.property('player1_elo', null);
+        should(request.data).have.property('player2_score', 6);
+        should(request.data).have.property('player2_elo', null);
+      });
     });
   });
 });

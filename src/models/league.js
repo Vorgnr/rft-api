@@ -6,7 +6,15 @@ class League extends BaseModel {
   }
 
   static get schema() {
-    return ['id', 'name', 'starting_elo'];
+    return [
+      'id',
+      'name',
+      'starting_elo',
+      'winning_base_elo',
+      'losing_base_elo',
+      'ragequit_penalty',
+      'rank_treshold',
+    ];
   }
 
   static get readSchema() {
