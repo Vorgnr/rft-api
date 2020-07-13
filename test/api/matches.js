@@ -133,6 +133,48 @@ describe('Match API', () => {
         should(qudansElo).be.an.Array().with.lengthOf(1);
         should(qudansElo[0]).have.property('value', 1767);
       });
+
+      describe('when players are rank 0', () => {
+        before(async () => {
+          await global.test.knex('player').insert({ id: 'JDCR', name: 'JDCR' });
+          await global.test.knex('player').insert({ id: 'Lilmajin', name: 'Lilmajin' });
+          await global.test.knex('elo').insert({
+            id: 'jdcrElo', value: 0, player_id: 'JDCR', league_id: 'ISL',
+          });
+          await global.test.knex('elo').insert({
+            id: 'lilElo', value: 0, player_id: 'Lilmajin', league_id: 'ISL',
+          });
+        });
+
+        it('should update match', async () => {
+          await global.test.knex('match').insert({
+            id: '3',
+            player1_id: 'Lilmajin',
+            player2_id: 'JDCR',
+            league_id: 'ISL',
+            ft: 10,
+          });
+          const request = await global.test.axios.put('/matches/3', { player1_score: 10, player2_score: 6 });
+          should(request).have.property('status', 200);
+          should(request.data).have.property('id');
+          should(request.data).have.property('completed_at');
+          should(request.data).have.property('player1_score', 10);
+          should(request.data).have.property('player1_elo', 700);
+          should(request.data).have.property('player2_score', 6);
+          should(request.data).have.property('player2_elo', -700);
+          const lilMajinElo = await global.test.knex('elo')
+            .where({ player_id: 'Lilmajin', league_id: 'ISL' });
+
+          should(lilMajinElo).be.an.Array().with.lengthOf(1);
+          should(lilMajinElo[0]).have.property('value', 700);
+
+          const jdcrElo = await global.test.knex('elo')
+            .where({ player_id: 'JDCR', league_id: 'ISL' });
+
+          should(jdcrElo).be.an.Array().with.lengthOf(1);
+          should(jdcrElo[0]).have.property('value', 0);
+        });
+      });
     });
 
     describe('when match is not completed', () => {
