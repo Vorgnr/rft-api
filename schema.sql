@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   `losing_base_elo` INT NOT NULL DEFAULT 0,
   `ragequit_penalty` INT NOT NULL DEFAULT 0,
   `rank_treshold` INT NOT NULL DEFAULT 0,
+  `rank_diff_ratio` INT NOT NULL DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;

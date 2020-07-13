@@ -14,6 +14,7 @@ class League extends BaseModel {
       'losing_base_elo',
       'ragequit_penalty',
       'rank_treshold',
+      'rank_diff_ratio',
     ];
   }
 

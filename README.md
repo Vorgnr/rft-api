@@ -21,9 +21,9 @@
 
 #### Logique Elo
 
-- [ ] Dés que le score atteint le FT -> Match complété
-- [ ] Calcul des points
-- [ ] Prise en comptes des ragequit
+- [x] Dés que le score atteint le FT -> Match complété
+- [x] Calcul des points
+- [x] Prise en comptes des ragequit
 
 ## Setup
 * node v14+

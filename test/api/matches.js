@@ -86,6 +86,7 @@ describe('Match API', () => {
         losing_base_elo: 700,
         rank_treshold: 1000,
         starting_elo: 2000,
+        rank_diff_ratio: 100,
       });
     });
     describe('when match doest not exist', () => {

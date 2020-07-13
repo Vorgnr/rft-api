@@ -77,8 +77,12 @@ class MatchController extends BaseController {
         winningElo = Number.parseInt((league.winning_base_elo / (1 + winnerRank + rankDiff)), 10);
         losingElo = winningElo;
       } else {
-        winningElo = Number.parseInt((league.winning_base_elo / (1 + winnerRank)) + rankDiff * 100, 10);
-        losingElo = Number.parseInt((league.winning_base_elo / (1 + looserRank)) + rankDiff * 100, 10);
+        winningElo = Number.parseInt((league.winning_base_elo / (1 + winnerRank)) + rankDiff * league.rank_diff_ratio, 10);
+        losingElo = Number.parseInt((league.winning_base_elo / (1 + looserRank)) + rankDiff * league.rank_diff_ratio, 10);
+      }
+
+      if (loser.ragequit) {
+        losingElo += league.ragequit_penalty;
       }
 
       toBeUpdated.player1_elo = winner.isPlayer1 ? winningElo : -losingElo;
