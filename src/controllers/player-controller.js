@@ -29,17 +29,19 @@ class PlayerController extends BaseController {
     };
 
     const cleanFilters = (qb) => {
-      if (filters.name) {
-        qb.whereRaw('name like \'%??%\'', [filters.name]);
-      }
       if (filters.league_id) {
-        qb.where('league_id', filters.league_id)
-          .orWhere('league_id', 'is', null);
+        qb.whereRaw('(league_id = ? or league_id is NULL)', [filters.league_id]);
+      }
+      if (filters.name) {
+        qb.whereRaw('lower(player.name) like ?', [`%${filters.name.trim().toLowerCase()}%`]);
       }
     };
 
+    const cleanOrderBy = orderBy
+      || ['elo.value', 'desc'];
+
     return this.repository.list({
-      filters: cleanFilters, page, perPage, orderBy, leftOuterJoin,
+      filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, leftOuterJoin,
     });
   }
 }

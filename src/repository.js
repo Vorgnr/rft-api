@@ -49,7 +49,11 @@ class Repository {
       .where(filters);
 
     if (orderBy) {
-      query.orderBy(orderBy);
+      if (typeof orderBy === 'string') {
+        query.orderBy(orderBy);
+      } else {
+        query.orderBy(...orderBy);
+      }
     }
 
     if (leftOuterJoin) {
