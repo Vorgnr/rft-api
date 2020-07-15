@@ -26,10 +26,10 @@ class BaseController {
   }
 
   async list({
-    filters, page, perPage, orderBy,
+    filters, page, perPage, orderBy, leftOuterJoin,
   }) {
     return this.repository.list({
-      filters, page, perPage, orderBy,
+      filters, page, perPage, orderBy, leftOuterJoin,
     });
   }
 }

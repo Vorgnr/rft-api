@@ -9,6 +9,7 @@ class League extends BaseModel {
     return [
       'id',
       'name',
+      'is_active',
       'starting_elo',
       'winning_base_elo',
       'losing_base_elo',

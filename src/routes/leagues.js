@@ -1,10 +1,14 @@
 const router = require('express').Router();
-const { HttpError } = require('../static/errors');
+const { errorHander } = require('../utils/response');
 
 const leagues = (controllers) => {
   router.post('/', async (req, res, next) => {
-    const league = await controllers.LeagueController.create(req.body);
-    res.json(league);
+    try {
+      const league = await controllers.LeagueController.create(req.body);
+      res.json(league);
+    } catch (error) {
+      errorHander(error, res);
+    }
     next();
   });
 
@@ -13,9 +17,7 @@ const leagues = (controllers) => {
       const league = await controllers.LeagueController.get(req.params.leagueId);
       res.json(league);
     } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status).send({ error: error.message });
-      }
+      errorHander(error, res);
     }
     next();
   });
@@ -25,9 +27,27 @@ const leagues = (controllers) => {
       const league = await controllers.LeagueController.update(req.params.leagueId, req.body);
       res.json(league);
     } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status).send({ error: error.message });
-      }
+      errorHander(error, res);
+    }
+    next();
+  });
+
+  router.get('/', async (req, res, next) => {
+    try {
+      const {
+        page, perPage, name, orderBy,
+      } = req.query;
+
+      const filters = {
+        is_active: true,
+      };
+      if (name) filters.name = name;
+      const results = await controllers.LeagueController.list({
+        page, perPage, filters, orderBy,
+      });
+      res.json(results);
+    } catch (error) {
+      errorHander(error, res);
     }
     next();
   });

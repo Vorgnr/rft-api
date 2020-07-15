@@ -2,7 +2,7 @@ const should = require('should/as-function');
 
 describe('Elo API', () => {
   before(async () => global.test.clear());
-  describe('GET /elos/list', () => {
+  describe('GET /elos', () => {
     before(async () => {
       await Promise.all([
         global.test.knex('league').insert({ id: '1' }),
@@ -25,7 +25,7 @@ describe('Elo API', () => {
 
     describe('with no perPage query', () => {
       it('should list all elos', async () => {
-        const request = await global.test.axios.get('/elos/list');
+        const request = await global.test.axios.get('/elos');
         should(request).have.property('status', 200);
         should(request.data).be.an.Array()
           .with.lengthOf(3);
@@ -34,7 +34,7 @@ describe('Elo API', () => {
     describe('with perPage query', () => {
       it('should list elos', async () => {
         const perPage = 2;
-        const request = await global.test.axios.get(`/elos/list?perPage=${perPage}`);
+        const request = await global.test.axios.get(`/elos?perPage=${perPage}`);
         should(request).have.property('status', 200);
         should(request.data).be.an.Array()
           .with.lengthOf(perPage);
@@ -45,7 +45,7 @@ describe('Elo API', () => {
           const perPage = 1;
           const page = 2;
           const orderBy = 'player_id';
-          const request = await global.test.axios.get(`/elos/list?perPage=${perPage}&page=${page}&orderBy=${orderBy}`);
+          const request = await global.test.axios.get(`/elos?perPage=${perPage}&page=${page}&orderBy=${orderBy}`);
           should(request).have.property('status', 200);
           should(request.data).be.an.Array()
             .with.lengthOf(1);

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { errorHander } = require('../utils/response');
 
 const eloRoutes = (controllers) => {
-  router.get('/list', async (req, res, next) => {
+  router.get('/', async (req, res, next) => {
     try {
       const {
         page, perPage, playerId, leagueId, orderBy,
@@ -10,7 +10,7 @@ const eloRoutes = (controllers) => {
 
       const filters = {};
       if (playerId) filters.player_id = playerId;
-      if (leagueId) filters.leagueId = leagueId;
+      if (leagueId) filters.league_id = leagueId;
       const elos = await controllers.EloController.list({
         page, perPage, filters, orderBy,
       });

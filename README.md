@@ -4,11 +4,13 @@
 ### Players
 - [x] **POST** `/players/`
 - [x] **GET** `/players/:playerId`
+- [x] **GET** `/players`
 - [x] **PUT** `/players/:playerId`
 
 ### Leagues
 - [x] **POST** `/leagues/`
 - [x] **GET** `/leagues/:leagueId`
+- [x] **GET** `/leagues`
 - [x] **PUT** `/leagues/:leagueId`
 
 ### Matches
@@ -17,7 +19,7 @@
 - [x] **PUT** `/matches/:matchId`
 
 ### Elo
-- [x] **GET** `/elos/list`
+- [x] **GET** `/elos`
 
 #### Logique Elo
 

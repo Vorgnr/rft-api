@@ -32,6 +32,25 @@ const players = (controllers) => {
     next();
   });
 
+  router.get('/', async (req, res, next) => {
+    try {
+      const {
+        page, perPage, name, leagueId, orderBy,
+      } = req.query;
+
+      const filters = {};
+      if (name) filters.name = name;
+      if (leagueId) filters.league_id = leagueId;
+      const results = await controllers.PlayerController.list({
+        page, perPage, filters, orderBy,
+      });
+      res.json(results);
+    } catch (error) {
+      errorHander(error, res);
+    }
+    next();
+  });
+
   return router;
 };
 

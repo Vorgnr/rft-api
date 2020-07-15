@@ -21,7 +21,7 @@ describe('Match API', () => {
     });
 
     describe('when ft is not correct', () => {
-      it('should return a 403 error', async () => {
+      it('should return a 400 error', async () => {
         const body = {
           player1_id: 'Knee',
           player2_id: 'Qudans',
@@ -33,7 +33,7 @@ describe('Match API', () => {
             throw new Error('Unexpected promise resolution');
           })
           .catch((err) => {
-            should(err.response).have.property('status', 403);
+            should(err.response).have.property('status', 400);
           });
       });
     });

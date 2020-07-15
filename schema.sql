@@ -37,6 +37,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
+  `is_active` BOOLEAN DEFAULT 1,
   `starting_elo` INT NOT NULL DEFAULT 0,
   `winning_base_elo` INT NOT NULL DEFAULT 0,
   `losing_base_elo` INT NOT NULL DEFAULT 0,
