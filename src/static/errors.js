@@ -13,7 +13,7 @@ class NotFoundError extends HttpError {
 
 class BadRequestError extends HttpError {
   constructor(message) {
-    super({ message, status: 403 });
+    super({ message, status: 400 });
   }
 }
 
