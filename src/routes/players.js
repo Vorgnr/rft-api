@@ -3,8 +3,12 @@ const { errorHander } = require('../utils/response');
 
 const players = (controllers) => {
   router.post('/', async (req, res, next) => {
-    const player = await controllers.PlayerController.create(req.body);
-    res.json(player);
+    try {
+      const player = await controllers.PlayerController.create(req.body);
+      res.json(player);
+    } catch (error) {
+      errorHander(error, res);
+    }
     next();
   });
 

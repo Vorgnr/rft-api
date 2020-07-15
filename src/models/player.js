@@ -1,6 +1,15 @@
 const BaseModel = require('./base-model');
+const { BadRequestError } = require('../static/errors');
 
 class Player extends BaseModel {
+  constructor(body = {}) {
+    super(body);
+
+    if (!body.name) {
+      throw new BadRequestError('Player must have a name');
+    }
+  }
+
   static get modelName() {
     return 'player';
   }
