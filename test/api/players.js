@@ -99,10 +99,10 @@ describe('Player API', () => {
         await global.test.knex('league').insert({ id: 'PC', name: 'PC' });
         await global.test.knex('league').insert({ id: 'PS4', name: 'PS4' });
         await global.test.knex('league').insert({ id: 'O', name: 'O', is_active: false });
-        await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
-        await global.test.knex('player').insert({ id: 'DFT', name: 'DFT' });
-        await global.test.knex('player').insert({ id: 'Arslan', name: 'Arslan' });
-        await global.test.knex('player').insert({ id: 'SuperAkouma', name: 'SuperAkouma' });
+        await global.test.knex('player').insert({ id: 'Knee', name: 'Knee', main_character: 'bryan' });
+        await global.test.knex('player').insert({ id: 'DFT', name: 'DFT', main_character: 'steve' });
+        await global.test.knex('player').insert({ id: 'Arslan', name: 'Arslan', main_character: 'kazumi' });
+        await global.test.knex('player').insert({ id: 'SuperAkouma', name: 'SuperAkouma', main_character: 'akuma' });
         await global.test.knex('elo').insert({
           id: '1', player_id: 'Knee', league_id: 'PC', value: 1,
         });

@@ -8,6 +8,10 @@ class Player extends BaseModel {
     if (!body.name) {
       throw new BadRequestError('Player must have a name');
     }
+
+    if (body.main_character) {
+      this.main_character = body.main_character.toLowerCase();
+    }
   }
 
   static get modelName() {
@@ -15,7 +19,7 @@ class Player extends BaseModel {
   }
 
   static get schema() {
-    return ['id', 'name', 'email', 'status', 'password'];
+    return ['id', 'name', 'email', 'status', 'password', 'main_character'];
   }
 
   static get readSchema() {

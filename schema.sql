@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
   `status` VARCHAR(45) NULL,
   `email` VARCHAR(45) NULL,
   `password` VARCHAR(45) NULL,
+  `main_character` VARCHAR(45) NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -55,6 +56,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
   `id` VARCHAR(36) NOT NULL,
   `value` INT NULL,
+  `played_matches` INT DEFAULT 0,
   `league_id` VARCHAR(36) NOT NULL,
   `player_id` VARCHAR(36) NOT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,

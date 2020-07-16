@@ -6,7 +6,7 @@ class Elo extends BaseModel {
   }
 
   static get schema() {
-    return ['id', 'value', 'player_id', 'league_id'];
+    return ['id', 'value', 'player_id', 'league_id', 'played_matches'];
   }
 
   static get readSchema() {

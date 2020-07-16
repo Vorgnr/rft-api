@@ -173,6 +173,7 @@ describe('Match API', () => {
 
           should(jdcrElo).be.an.Array().with.lengthOf(1);
           should(jdcrElo[0]).have.property('value', 0);
+          should(jdcrElo[0]).have.property('played_matches', 1);
         });
       });
     });

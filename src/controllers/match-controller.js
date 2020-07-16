@@ -8,6 +8,7 @@ const playerGetElo = (player, elos, league) => {
       hasElo: true,
       value: elo.value,
       id: elo.id,
+      played_matches: elo.played_matches,
     };
   }
 
@@ -27,10 +28,12 @@ const updateElo = async (EloController, {
       player_id: winner.id,
       league_id: league.id,
       value: winnerElo.value + winningElo,
+      played_matches: 1,
     });
   } else {
     await EloController.update(winnerElo.id, {
       value: winnerElo.value + winningElo,
+      played_matches: winnerElo.played_matches + 1,
     });
   }
 
@@ -41,10 +44,12 @@ const updateElo = async (EloController, {
       player_id: loser.id,
       league_id: league.id,
       value: looserFinalElo,
+      played_matches: 1,
     });
   } else {
     await EloController.update(loserElo.id, {
       value: looserFinalElo,
+      played_matches: loserElo.played_matches + 1,
     });
   }
 };
