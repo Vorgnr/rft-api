@@ -55,53 +55,72 @@ const updateElo = async (EloController, {
 };
 
 class MatchController extends BaseController {
+  async distributeElo(match, body) {
+    const toBeUpdated = { ...body };
+    const league = await this.controllers.LeagueController.get(match.league_id);
+    const elos = await this.controllers.EloController.list({
+      filters: (builder) => {
+        builder.where('league_id', league.id);
+        builder.where('player_id', 'in', [match.player1_id, match.player2_id]);
+      },
+    });
+    const { winner, loser } = match.getResults();
+    const winnerElo = playerGetElo(winner, elos, league);
+    const winnerRank = playerGetRank(winnerElo.value, league);
+    const loserElo = playerGetElo(loser, elos, league);
+    const looserRank = playerGetRank(loserElo.value, league);
+    const rankDiff = Math.abs(looserRank - winnerRank);
+
+    let winningElo;
+    let losingElo;
+
+    if (winnerRank > looserRank) {
+      winningElo = Number.parseInt((league.winning_base_elo / (1 + winnerRank + rankDiff)), 10);
+      losingElo = winningElo;
+    } else {
+      winningElo = Number.parseInt((league.winning_base_elo / (1 + winnerRank)) + rankDiff * league.rank_diff_ratio, 10);
+      losingElo = Number.parseInt((league.winning_base_elo / (1 + looserRank)) + rankDiff * league.rank_diff_ratio, 10);
+    }
+
+    if (loser.ragequit) {
+      losingElo += league.ragequit_penalty;
+    }
+
+    toBeUpdated.player1_elo = winner.isPlayer1 ? winningElo : -losingElo;
+    toBeUpdated.player2_elo = winner.isPlayer1 ? -losingElo : winningElo;
+
+    await updateElo(this.controllers.EloController, {
+      winnerElo,
+      winner,
+      league,
+      winningElo,
+      loser,
+      loserElo,
+      losingElo,
+    });
+
+    return toBeUpdated;
+  }
+
+  async create(body) {
+    const match = new Match({ ...body });
+    let toBeCreated = body;
+
+    if (!match.completed_at && match.completed_at) {
+      toBeCreated = await this.distributeElo(match, body);
+    }
+
+    const createdMatch = await this.repository.create(toBeCreated);
+    return new Match({ ...match, ...createdMatch }).toJson();
+  }
+
   async update(id, body) {
     const matchBefore = await this.get(id);
     const match = new Match({ ...matchBefore, ...body });
-    const toBeUpdated = body;
+    let toBeUpdated = body;
 
     if (!matchBefore.completed_at && match.completed_at) {
-      const league = await this.controllers.LeagueController.get(match.league_id);
-      const elos = await this.controllers.EloController.list({
-        filters: (builder) => {
-          builder.where('league_id', league.id);
-          builder.where('player_id', 'in', [match.player1_id, match.player2_id]);
-        },
-      });
-      const { winner, loser } = match.getResults();
-      const winnerElo = playerGetElo(winner, elos, league);
-      const winnerRank = playerGetRank(winnerElo.value, league);
-      const loserElo = playerGetElo(loser, elos, league);
-      const looserRank = playerGetRank(loserElo.value, league);
-      const rankDiff = Math.abs(looserRank - winnerRank);
-
-      let winningElo;
-      let losingElo;
-
-      if (winnerRank > looserRank) {
-        winningElo = Number.parseInt((league.winning_base_elo / (1 + winnerRank + rankDiff)), 10);
-        losingElo = winningElo;
-      } else {
-        winningElo = Number.parseInt((league.winning_base_elo / (1 + winnerRank)) + rankDiff * league.rank_diff_ratio, 10);
-        losingElo = Number.parseInt((league.winning_base_elo / (1 + looserRank)) + rankDiff * league.rank_diff_ratio, 10);
-      }
-
-      if (loser.ragequit) {
-        losingElo += league.ragequit_penalty;
-      }
-
-      toBeUpdated.player1_elo = winner.isPlayer1 ? winningElo : -losingElo;
-      toBeUpdated.player2_elo = winner.isPlayer1 ? -losingElo : winningElo;
-
-      await updateElo(this.controllers.EloController, {
-        winnerElo,
-        winner,
-        league,
-        winningElo,
-        loser,
-        loserElo,
-        losingElo,
-      });
+      toBeUpdated = await this.distributeElo(match, body);
     }
     const updatedMatch = await this.repository.update(id, toBeUpdated);
     return new Match({ ...match, ...updatedMatch }).toJson();
