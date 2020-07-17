@@ -32,6 +32,27 @@ const matches = (controllers) => {
     next();
   });
 
+  router.get('/', async (req, res, next) => {
+    try {
+      const {
+        page, perPage, leagueId, name, orderBy,
+      } = req.query;
+
+      const filters = {
+        is_active: true,
+      };
+      if (leagueId) filters.league_id = leagueId;
+      if (name) filters.name = name;
+      const results = await controllers.MatchController.list({
+        page, perPage, filters, orderBy,
+      });
+      res.json(results);
+    } catch (error) {
+      errorHander(error, res);
+    }
+    next();
+  });
+
   return router;
 };
 

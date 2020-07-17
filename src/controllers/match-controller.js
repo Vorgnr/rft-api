@@ -125,6 +125,37 @@ class MatchController extends BaseController {
     const updatedMatch = await this.repository.update(id, toBeUpdated);
     return new Match({ ...match, ...updatedMatch }).toJson();
   }
+
+  async list({
+    filters, page, perPage, orderBy,
+  }) {
+    const innerJoins = [
+      {
+        table: 'player as player1',
+        join: (qb) => {
+          qb.on('player1.id', '=', 'match.player1_id');
+        },
+      },
+      {
+        table: 'player as player2',
+        join: (qb) => {
+          qb.on('player2.id', '=', 'match.player2_id');
+        },
+      },
+    ];
+
+    const cleanFilters = (qb) => {
+      if (filters.name) {
+        const searchName = `%${filters.name.trim().toLowerCase()}%`;
+        qb.whereRaw('(lower(player1.name) like ? or lower(player2.name) like ?)',
+          [searchName, searchName]);
+      }
+    };
+
+    return this.repository.list({
+      filters: cleanFilters, page, perPage, orderBy, innerJoins,
+    });
+  }
 }
 
 module.exports = MatchController;

@@ -20,6 +20,21 @@ describe('Match API', () => {
         .with.lengthOf(1);
     });
 
+    describe('when match is completed', () => {
+      it('should create a match', async () => {
+        const body = {
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          ft: 10,
+          player1_score: 10,
+          player2_score: 1,
+        };
+        const request = await global.test.axios.post('/matches', body);
+        should(request).have.property('status', 200);
+      });
+    });
+
     describe('when ft is not correct', () => {
       it('should return a 400 error', async () => {
         const body = {
@@ -195,6 +210,63 @@ describe('Match API', () => {
         should(request.data).have.property('player1_elo', null);
         should(request.data).have.property('player2_score', 6);
         should(request.data).have.property('player2_elo', null);
+      });
+    });
+  });
+
+  describe('GET /matches', () => {
+    describe('when there is no matches', () => {
+      before(async () => {
+        await global.test.clear();
+      });
+      it('should return empty array', async () => {
+        const request = await global.test.axios.get('/matches');
+        should(request.data).be.an.Array()
+          .with.lengthOf(0);
+      });
+    });
+
+    describe('when there is matches', () => {
+      before(async () => {
+        await global.test.clear();
+        await global.test.knex('player').insert({ id: 'Knee', name: 'Knee', main_character: 'bryan' });
+        await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans', main_character: 'deviljin' });
+        await global.test.knex('league').insert({
+          id: 'ISL',
+          name: 'International Superstar League',
+          winning_base_elo: 700,
+          losing_base_elo: 700,
+          rank_treshold: 1000,
+          starting_elo: 2000,
+          rank_diff_ratio: 100,
+        });
+        await global.test.knex('match').insert({
+          id: '1',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          ft: 10,
+        });
+        await global.test.knex('match').insert({
+          id: '2',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          ft: 10,
+        });
+        await global.test.knex('match').insert({
+          id: '3',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          ft: 10,
+        });
+      });
+
+      it('should return empty array', async () => {
+        const request = await global.test.axios.get('/matches');
+        should(request.data).be.an.Array()
+          .with.lengthOf(3);
       });
     });
   });

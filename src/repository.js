@@ -42,7 +42,7 @@ class Repository {
   }
 
   async list({
-    filters, page = 1, perPage, orderBy, leftOuterJoin,
+    filters, page = 1, perPage, orderBy, leftOuterJoin, innerJoins,
   }) {
     debug('%s list with filters %j page %d perPage %d request', this.Model.modelName, filters, page, perPage);
     const query = this.knex(this.Model.modelName)
@@ -54,6 +54,13 @@ class Repository {
       } else {
         query.orderBy(...orderBy);
       }
+    }
+
+    if (innerJoins) {
+      query.options({ nestTables: true });
+      innerJoins.forEach(({ table, join }) => {
+        query.innerJoin(table, join);
+      });
     }
 
     if (leftOuterJoin) {
