@@ -1,3 +1,4 @@
+const format = require('date-fns/format');
 const BaseModel = require('./base-model');
 const { BadRequestError } = require('../static/errors');
 
@@ -22,6 +23,10 @@ class Match extends BaseModel {
     const ft = validScore(this.ft);
     if (ft === false || ft === 0) {
       throw new BadRequestError('Match ft must be positive integer');
+    }
+
+    if (this.player1_id === this.player2_id) {
+      throw new BadRequestError('Player can not fight himself. Tyler');
     }
 
     if (this.player1_ragequit || this.player2_ragequit) {
@@ -50,7 +55,7 @@ class Match extends BaseModel {
   }
 
   complete() {
-    this.completed_at = Date.now();
+    this.completed_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
   }
 
   getResults() {
