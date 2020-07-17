@@ -54,6 +54,8 @@ class Repository {
       } else {
         query.orderBy(...orderBy);
       }
+    } else {
+      query.orderBy('created_at');
     }
 
     if (innerJoins) {
