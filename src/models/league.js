@@ -1,6 +1,15 @@
 const BaseModel = require('./base-model');
+const { BadRequestError } = require('../static/errors');
 
 class League extends BaseModel {
+  constructor(body = {}) {
+    super(body);
+
+    if (!body.rank_treshold > 0) {
+      throw new BadRequestError('League rank_treshold must be > 0');
+    }
+  }
+
   static get modelName() {
     return 'league';
   }

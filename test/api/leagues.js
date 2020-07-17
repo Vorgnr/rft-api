@@ -3,8 +3,21 @@ const should = require('should/as-function');
 describe('League API', () => {
   describe('POST /leagues', () => {
     before(async () => global.test.clear());
+
+    describe('when league is not correct', () => {
+      it('should return a 400 error', async () => {
+        const body = { name: 'RFT One' };
+        await global.test.axios.post('/leagues', body)
+          .then(() => {
+            throw new Error('Unexpected promise resolution');
+          })
+          .catch((err) => {
+            should(err.response).have.property('status', 400);
+          });
+      });
+    });
     it('should create a league', async () => {
-      const body = { name: 'RFT One' };
+      const body = { name: 'RFT One', rank_treshold: 1000 };
       const request = await global.test.axios.post('/leagues', body);
       should(request.data).have.property('id');
       should(request.data).have.property('name', body.name);
