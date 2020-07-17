@@ -120,7 +120,7 @@ describe('Player API', () => {
         });
       });
       it('should list players', async () => {
-        const request = await global.test.axios.get('/players?leagueId=PC');
+        const request = await global.test.axios.get('/players?leagueId=PC&withElo=1');
         should(request).have.property('status', 200);
         should(request.data).be.an.Array()
           .with.lengthOf(4);

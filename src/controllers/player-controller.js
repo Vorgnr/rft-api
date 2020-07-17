@@ -19,14 +19,17 @@ class PlayerController extends BaseController {
   }
 
   async list({
-    filters, page, perPage, orderBy,
+    filters, page, perPage, orderBy, withElo,
   }) {
-    const leftOuterJoin = {
-      table: 'elo',
-      join: (qb) => {
-        qb.on('player.id', '=', 'elo.player_id');
-      },
-    };
+    let leftOuterJoin;
+    if (withElo) {
+      leftOuterJoin = {
+        table: 'elo',
+        join: (qb) => {
+          qb.on('player.id', '=', 'elo.player_id');
+        },
+      };
+    }
 
     const cleanFilters = (qb) => {
       if (filters.league_id) {
@@ -38,7 +41,7 @@ class PlayerController extends BaseController {
     };
 
     const cleanOrderBy = orderBy
-      || ['elo.value', 'desc'];
+      || (withElo && ['elo.value', 'desc']);
 
     return this.repository.list({
       filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, leftOuterJoin,
