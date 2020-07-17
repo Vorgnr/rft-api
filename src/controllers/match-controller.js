@@ -106,7 +106,7 @@ class MatchController extends BaseController {
     const match = new Match({ ...body });
     let toBeCreated = body;
 
-    if (!match.completed_at && match.completed_at) {
+    if (match.completed_at) {
       toBeCreated = await this.distributeElo(match, body);
     }
 
@@ -147,13 +147,20 @@ class MatchController extends BaseController {
     const cleanFilters = (qb) => {
       if (filters.name) {
         const searchName = `%${filters.name.trim().toLowerCase()}%`;
-        qb.whereRaw('(lower(player1.name) like ? or lower(player2.name) like ?)',
+        qb.whereRaw('((lower(player1.name) like ? or lower(player2.name) like ?))',
           [searchName, searchName]);
+      }
+
+      if (filters.league_id) {
+        qb.where('league_id', '=', filters.league_id);
       }
     };
 
+    const cleanOrderBy = orderBy
+    || ['match.created_at', 'desc'];
+
     return this.repository.list({
-      filters: cleanFilters, page, perPage, orderBy, innerJoins,
+      filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, innerJoins,
     });
   }
 }

@@ -6,7 +6,15 @@ describe('Match API', () => {
     it('should create a match', async () => {
       await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
       await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans' });
-      await global.test.knex('league').insert({ id: 'ISL', name: 'International Superstar League' });
+      await global.test.knex('league').insert({
+        id: 'ISL',
+        name: 'International Superstar League',
+        rank_treshold: 1000,
+        winning_base_elo: 700,
+        losing_base_elo: 700,
+        starting_elo: 2000,
+        rank_diff_ratio: 100,
+      });
       const body = {
         player1_id: 'Knee',
         player2_id: 'Qudans',
