@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
+CREATE INDEX IF NOT EXISTS player_search_id ON `rftdb`.`player` (`id`) USING BTREE;
+CREATE INDEX IF NOT EXISTS player_search_name ON `rftdb`.`player` (`name`) USING BTREE;
+CREATE INDEX IF NOT EXISTS player_search_eamil ON `rftdb`.`player` (`email`) USING BTREE;
+
 
 -- -----------------------------------------------------
 -- Table `rftdb`.`league`
@@ -48,6 +52,8 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
+
+CREATE INDEX IF NOT EXISTS league_search_id ON `rftdb`.`league` (`id`) USING BTREE;
 
 
 -- -----------------------------------------------------
@@ -74,6 +80,9 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+CREATE INDEX IF NOT EXISTS elo_search_league_id ON `rftdb`.`elo` (`league_id`) USING BTREE;
+CREATE INDEX IF NOT EXISTS elo_search_player_id ON `rftdb`.`elo` (`player_id`) USING BTREE;
 
 
 -- -----------------------------------------------------
@@ -118,6 +127,22 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+CREATE INDEX IF NOT EXISTS match_search_id ON `rftdb`.`match` (`id`) USING BTREE;
+
+-- -----------------------------------------------------
+-- Table `rftdb`.`sessions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rftdb`.`sessions` (
+  `sid` VARCHAR(255) NOT NULL,
+  `sess` JSON NOT NULL,
+  `expired` DATETIME NOT NULL,
+  PRIMARY KEY (`sid`)
+)
+ENGINE = InnoDB;
+
+CREATE INDEX IF NOT EXISTS sessions_pkey ON `rftdb`.`sessions` (`sid`) USING BTREE;
+CREATE INDEX IF NOT EXISTS sessions_expired_index ON `rftdb`.`sessions` (`expired`) USING BTREE;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
