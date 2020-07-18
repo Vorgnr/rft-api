@@ -35,7 +35,7 @@ const matches = (controllers) => {
   router.get('/', async (req, res, next) => {
     try {
       const {
-        page, perPage, leagueId, name, orderBy,
+        page, perPage, leagueId, name, matchId, orderBy,
       } = req.query;
 
       const filters = {
@@ -43,6 +43,7 @@ const matches = (controllers) => {
       };
       if (leagueId) filters.league_id = leagueId;
       if (name) filters.name = name;
+      if (matchId) filters.matchId = matchId;
       const results = await controllers.MatchController.list({
         page, perPage, filters, orderBy,
       });

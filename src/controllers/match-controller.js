@@ -87,7 +87,9 @@ class MatchController extends BaseController {
     }
 
     toBeUpdated.player1_elo = winner.isPlayer1 ? winningElo : -losingElo;
+    toBeUpdated.player1_previous_elo = winnerElo.value;
     toBeUpdated.player2_elo = winner.isPlayer1 ? -losingElo : winningElo;
+    toBeUpdated.player2_previous_elo = loserElo.value;
 
     await updateElo(this.controllers.EloController, {
       winnerElo,
@@ -145,6 +147,10 @@ class MatchController extends BaseController {
     ];
 
     const cleanFilters = (qb) => {
+      if (filters.matchId) {
+        qb.where('match.id', '=', filters.matchId);
+      }
+
       if (filters.name) {
         const searchName = `%${filters.name.trim().toLowerCase()}%`;
         qb.whereRaw('((lower(player1.name) like ? or lower(player2.name) like ?))',

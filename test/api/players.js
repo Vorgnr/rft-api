@@ -96,7 +96,15 @@ describe('Player API', () => {
 
     describe('when there are players', () => {
       before(async () => {
-        await global.test.knex('league').insert({ id: 'PC', name: 'PC' });
+        await global.test.knex('league').insert({
+          id: 'PC',
+          name: 'PC',
+          rank_treshold: 1000,
+          winning_base_elo: 700,
+          losing_base_elo: 700,
+          starting_elo: 2000,
+          rank_diff_ratio: 100,
+        });
         await global.test.knex('league').insert({ id: 'PS4', name: 'PS4' });
         await global.test.knex('league').insert({ id: 'O', name: 'O', is_active: false });
         await global.test.knex('player').insert({ id: 'Knee', name: 'Knee', main_character: 'bryan' });

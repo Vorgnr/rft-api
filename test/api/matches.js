@@ -12,7 +12,7 @@ describe('Match API', () => {
         rank_treshold: 1000,
         winning_base_elo: 700,
         losing_base_elo: 700,
-        starting_elo: 2000,
+        starting_elo: 0,
         rank_diff_ratio: 100,
       });
       const body = {
@@ -40,6 +40,49 @@ describe('Match API', () => {
         };
         const request = await global.test.axios.post('/matches', body);
         should(request).have.property('status', 200);
+        should(request.data).have.property('player1_score', 10);
+        should(request.data).have.property('player2_score', 1);
+        should(request.data).have.property('player1_elo', 700);
+        should(request.data).have.property('player2_elo', -700);
+      });
+
+      it('should create a match', async () => {
+        await global.test.knex('league').insert({
+          id: 'ISL2',
+          name: 'International Superstar League',
+          rank_treshold: 1000,
+          winning_base_elo: 700,
+          losing_base_elo: 700,
+          starting_elo: 2000,
+          rank_diff_ratio: 100,
+        });
+        const body = {
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL2',
+          ft: 10,
+          player1_score: 10,
+          player2_score: 1,
+        };
+        const request = await global.test.axios.post('/matches', body);
+        should(request).have.property('status', 200);
+        should(request.data).have.property('player1_score', 10);
+        should(request.data).have.property('player2_score', 1);
+        should(request.data).have.property('player1_elo', 233);
+        should(request.data).have.property('player1_previous_elo', 2000);
+        should(request.data).have.property('player2_elo', -233);
+        should(request.data).have.property('player2_previous_elo', 2000);
+        const kneeElo = await global.test.knex('elo')
+          .where({ player_id: 'Knee', league_id: 'ISL2' });
+
+        should(kneeElo).be.an.Array().with.lengthOf(1);
+        should(kneeElo[0]).have.property('value', 2233);
+
+        const qudansElo = await global.test.knex('elo')
+          .where({ player_id: 'Qudans', league_id: 'ISL2' });
+
+        should(qudansElo).be.an.Array().with.lengthOf(1);
+        should(qudansElo[0]).have.property('value', 1767);
       });
     });
 
