@@ -52,11 +52,6 @@ module.exports = {
     app.use(bodyParser.urlencoded());
     app.use(bodyParser.json());
 
-    app.use((req, res, next) => {
-      console.log('Session', req.session);
-      next();
-    });
-
     Object.keys(routes).forEach((path) => {
       const handler = routes[path];
       app.use(path, handler(Controllers));
