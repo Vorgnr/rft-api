@@ -6,7 +6,7 @@ describe('Player API', () => {
 
     it('should create a player', async () => {
       const body = { name: 'DougFromParis' };
-      const request = await global.test.axios.post('/players', { name: 'DougFromParis' });
+      const request = await global.test.axios.post('/players', body);
       should(request.data).have.property('id');
       should(request.data).have.property('name', body.name);
       should(request).have.property('status', 200);
@@ -24,6 +24,25 @@ describe('Player API', () => {
           .catch((err) => {
             should(err.response).have.property('status', 400);
           });
+      });
+    });
+
+    describe('when payload contains password', () => {
+      before(async () => global.test.clear());
+      it('should hash password and create player', async () => {
+        const body = {
+          name: 'DougFromParis2',
+          password: 'my-very-strong-password-123x',
+        };
+        const request = await global.test.axios.post('/players', body);
+        should(request.data).have.property('id');
+        should(request.data).have.property('name', body.name);
+        should(request.data).not.have.property('password');
+        should(request).have.property('status', 200);
+        const players = await global.test.knex('player').select('*');
+        should(players).be.an.Array()
+          .with.lengthOf(1);
+        should(players[0].password).not.equals(body.password);
       });
     });
   });
@@ -132,6 +151,7 @@ describe('Player API', () => {
         should(request).have.property('status', 200);
         should(request.data).be.an.Array()
           .with.lengthOf(4);
+        should(request.data[0]).not.have.property('password');
       });
     });
   });

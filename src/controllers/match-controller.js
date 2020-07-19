@@ -1,5 +1,7 @@
 const BaseController = require('./base-controller');
 const Match = require('../models/match');
+const Player = require('../models/player');
+const { pick } = require('../utils/object');
 
 const playerGetElo = (player, elos, league) => {
   const elo = elos.filter((e) => e.player_id === player.id)[0];
@@ -165,9 +167,15 @@ class MatchController extends BaseController {
     const cleanOrderBy = orderBy
     || ['match.created_at', 'desc'];
 
-    return this.repository.list({
+    const items = await this.repository.list({
       filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, innerJoins,
     });
+
+    return items.map(({ match, player1, player2 }) => ({
+      match,
+      player1: pick(player1, Player.readSchema),
+      player2: pick(player2, Player.readSchema),
+    }));
   }
 }
 

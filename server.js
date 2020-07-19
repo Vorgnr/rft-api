@@ -1,7 +1,10 @@
 const express = require('express');
+const session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const debug = require('debug')('rft:server');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 
 const config = require('./config');
 const setup = require('./src/setup');
@@ -14,11 +17,14 @@ dotenv.config();
 const port = process.env.PORT;
 const env = process.env.NODE_ENV;
 const frontApp = process.env.FRONT_APP;
+const sessionSecret = process.env.SESSION_SECRET;
+const sessionMaxAge = process.env.SESSION_MAXAGE;
 
 module.exports = {
   start: async () => {
     debug('Server preparing %s using port %d...', env, port);
     const { knex, Controllers } = await setup(config.database[env]);
+    const store = new KnexSessionStore({ knex });
     debug('%d Controllers ok ...', Object.keys(Controllers).length);
 
     app.use((req, res, next) => {
@@ -29,8 +35,27 @@ module.exports = {
       next();
     });
 
+    app.use(helmet());
+    app.set('trust proxy', 1);
+    app.use(session({
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        name: 'rftapisid',
+        maxAge: Number(sessionMaxAge),
+      },
+      secure: env !== 'development',
+      store,
+    }));
+
     app.use(bodyParser.urlencoded());
     app.use(bodyParser.json());
+
+    app.use((req, res, next) => {
+      console.log('Session', req.session);
+      next();
+    });
 
     Object.keys(routes).forEach((path) => {
       const handler = routes[path];

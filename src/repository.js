@@ -6,13 +6,12 @@ class Repository {
     this.Model = model;
   }
 
-  async get(id) {
-    debug('%s get(%s) request', this.Model.modelName, id);
+  async get(params) {
+    debug('%s get(%s) request', this.Model.modelName, params);
     const model = await this.knex(this.Model.modelName)
-      .where({ id })
-      .select(this.Model.readSchema);
+      .where(params);
 
-    debug('get(%s) response %j', id, model);
+    debug('get(%j) response %j', params, model);
     if (model[0]) {
       return new this.Model(model[0]);
     }

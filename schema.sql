@@ -22,10 +22,8 @@ USE `rftdb` ;
 CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
   `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
-  `avatar` VARCHAR(45) NULL,
-  `status` VARCHAR(45) NULL,
   `email` VARCHAR(45) NULL,
-  `password` VARCHAR(45) NULL,
+  `password` CHAR(60) NULL,
   `main_character` VARCHAR(45) NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
@@ -129,6 +127,9 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
 ENGINE = InnoDB;
 
 CREATE INDEX IF NOT EXISTS match_search_id ON `rftdb`.`match` (`id`) USING BTREE;
+CREATE INDEX IF NOT EXISTS match_search_league_id ON `rftdb`.`match` (`league_id`) USING BTREE;
+CREATE INDEX IF NOT EXISTS match_search_player1_id ON `rftdb`.`match` (`player1_id`) USING BTREE;
+CREATE INDEX IF NOT EXISTS match_search_player2_id ON `rftdb`.`match` (`player2_id`) USING BTREE;
 
 -- -----------------------------------------------------
 -- Table `rftdb`.`sessions`

@@ -8,7 +8,7 @@ class BaseController {
   }
 
   async get(id) {
-    const entity = await this.repository.get(id);
+    const entity = await this.repository.get({ id });
     if (!entity) {
       throw new NotFoundError(`${this.Model.modelName} not found`);
     }
