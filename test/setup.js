@@ -3,7 +3,7 @@ const server = require('../server');
 
 before(async () => {
   axios.defaults.baseURL = `http://localhost:${process.env.PORT}`;
-  const knex = await server.start();
+  const knex = await server.start({ isTest: true });
   global.test = {
     knex,
     clear: async () => {

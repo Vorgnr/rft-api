@@ -4,7 +4,6 @@ const { errorHander, mustBeAuth, mustBeAdmin } = require('../utils/response');
 const leagues = (controllers) => {
   router.post('/', async (req, res, next) => {
     try {
-      mustBeAuth(req);
       mustBeAdmin(req);
       const league = await controllers.LeagueController.create(req.body);
       res.json(league);
@@ -26,7 +25,6 @@ const leagues = (controllers) => {
 
   router.put('/:leagueId', async (req, res, next) => {
     try {
-      mustBeAuth(req);
       mustBeAdmin(req);
       const league = await controllers.LeagueController.update(req.params.leagueId, req.body);
       res.json(league);

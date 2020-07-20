@@ -21,7 +21,7 @@ const sessionSecret = process.env.SESSION_SECRET;
 const sessionMaxAge = process.env.SESSION_MAXAGE;
 
 module.exports = {
-  start: async () => {
+  start: async (args = {}) => {
     debug('Server preparing %s using port %d...', env, port);
     const { knex, Controllers } = await setup(config.database[env]);
     const store = new KnexSessionStore({ knex });
@@ -48,6 +48,15 @@ module.exports = {
       secure: env !== 'development',
       store,
     }));
+
+    if (args.isTest) {
+      app.use((req, res, next) => {
+        req.session.player = {
+          is_admin: true,
+        };
+        next();
+      });
+    }
 
     app.use(bodyParser.urlencoded());
     app.use(bodyParser.json());

@@ -12,22 +12,18 @@ const errorHander = (error, res) => {
 };
 
 const mustBeAuth = (req) => {
-  if (!req.session.player && process.env.NODE_ENV !== 'test') {
+  if (!req.session.player) {
     throw new UnauthorizedError('Must be auth');
   }
 };
 
 const mustBeAdmin = (req) => {
-  if (process.env.NODE_ENV !== 'test' && !req.session.player.is_admim) {
+  if (!req.session.player && !req.session.player.is_admim) {
     throw new UnauthorizedError('Must be auth');
   }
 };
 
 const mustOwnPlayer = (req) => {
-  if (process.env.NODE_ENV === 'test') {
-    return undefined;
-  }
-
   if (!req.session.player.is_admin
     && req.params.playerId !== req.session.player.id) {
     throw new ForbiddenError('Forbidden acces');
@@ -35,14 +31,7 @@ const mustOwnPlayer = (req) => {
 };
 
 const mustOwnMatch = (req) => {
-  if (process.env.NODE_ENV === 'test') {
-    return undefined;
-  }
-
   mustBeAuth(req);
-  if (process.env.NODE_ENV === 'test') {
-    return undefined;
-  }
   if (!req.session.player.is_admin
       && [req.body.player1_id, req.body.player2_id].indexOf(req.session.player.id) === -1) {
     throw new ForbiddenError('Forbidden acces');
