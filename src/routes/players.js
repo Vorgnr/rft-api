@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { errorHander } = require('../utils/response');
+const { errorHander, mustBeAuth, mustOwnPlayer } = require('../utils/response');
 
 const players = (controllers) => {
   router.post('/', async (req, res, next) => {
@@ -24,6 +24,8 @@ const players = (controllers) => {
 
   router.put('/:playerId', async (req, res, next) => {
     try {
+      mustBeAuth(req);
+      mustOwnPlayer(req);
       const player = await controllers.PlayerController.update(req.params.playerId, req.body);
       res.json(player);
     } catch (error) {

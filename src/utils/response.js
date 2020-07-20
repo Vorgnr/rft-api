@@ -1,5 +1,5 @@
 const debug = require('debug')('rft:response');
-const { HttpError } = require('../static/errors');
+const { HttpError, UnauthorizedError, ForbiddenError } = require('../static/errors');
 
 const errorHander = (error, res) => {
   debug('Error %e', error);
@@ -11,4 +11,48 @@ const errorHander = (error, res) => {
   res.send({ error: error.message });
 };
 
-module.exports = { errorHander };
+const mustBeAuth = (req) => {
+  if (!req.session.player && process.env.NODE_ENV !== 'test') {
+    throw new UnauthorizedError('Must be auth');
+  }
+};
+
+const mustBeAdmin = (req) => {
+  if (process.env.NODE_ENV !== 'test' && !req.session.player.is_admim) {
+    throw new UnauthorizedError('Must be auth');
+  }
+};
+
+const mustOwnPlayer = (req) => {
+  if (process.env.NODE_ENV === 'test') {
+    return undefined;
+  }
+
+  if (!req.session.player.is_admin
+    && req.params.playerId !== req.session.player.id) {
+    throw new ForbiddenError('Forbidden acces');
+  }
+};
+
+const mustOwnMatch = (req) => {
+  if (process.env.NODE_ENV === 'test') {
+    return undefined;
+  }
+
+  mustBeAuth(req);
+  if (process.env.NODE_ENV === 'test') {
+    return undefined;
+  }
+  if (!req.session.player.is_admin
+      && [req.body.player1_id, req.body.player2_id].indexOf(req.session.player.id) === -1) {
+    throw new ForbiddenError('Forbidden acces');
+  }
+};
+
+module.exports = {
+  errorHander,
+  mustBeAuth,
+  mustOwnMatch,
+  mustBeAdmin,
+  mustOwnPlayer,
+};

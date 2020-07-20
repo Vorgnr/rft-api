@@ -23,9 +23,16 @@ class UnauthorizedError extends HttpError {
   }
 }
 
+class ForbiddenError extends HttpError {
+  constructor(message) {
+    super({ message, status: 403 });
+  }
+}
+
 module.exports = {
   NotFoundError,
   HttpError,
   BadRequestError,
   UnauthorizedError,
+  ForbiddenError,
 };
