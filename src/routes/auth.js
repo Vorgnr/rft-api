@@ -25,7 +25,7 @@ const auth = (controllers) => {
 
   router.get('/', async (req, res, next) => {
     try {
-      res.json(req.session.player || {});
+      res.json(req.session.player || null);
     } catch (error) {
       errorHander(error, res);
     }
