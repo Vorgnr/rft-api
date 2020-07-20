@@ -28,11 +28,11 @@ class Player extends BaseModel {
   }
 
   static get schema() {
-    return ['id', 'name', 'email', 'password', 'main_character'];
+    return ['id', 'name', 'email', 'password', 'main_character', 'is_admin', 'is_frozen'];
   }
 
   static get readSchema() {
-    return ['id', 'email', 'name', 'main_character'];
+    return ['id', 'email', 'name', 'main_character', 'is_admin', 'is_frozen'];
   }
 }
 

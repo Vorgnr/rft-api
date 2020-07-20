@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
   `email` VARCHAR(45) NULL,
   `password` CHAR(60) NULL,
   `main_character` VARCHAR(45) NULL,
+  `is_admin` BOOLEAN DEFAULT 0,
+  `is_frozen` BOOLEAN DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
