@@ -52,6 +52,17 @@ module.exports = {
     app.use(bodyParser.urlencoded());
     app.use(bodyParser.json());
 
+    app.use((req, res, next) => {
+      let message;
+      if (!req.session.player) {
+        message = 'Unauthenticated';
+      } else {
+        message = `Authenticated ${req.session.player.is_admin ? 'Admin' : ''}`;
+      }
+      debug('%s request %s', message, req.originalUrl);
+      next();
+    });
+
     Object.keys(routes).forEach((path) => {
       const handler = routes[path];
       app.use(path, handler(Controllers));
