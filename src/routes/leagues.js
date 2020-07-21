@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { errorHander, mustBeAuth, mustBeAdmin } = require('../utils/response');
+const { errorHander, mustBeAdmin } = require('../utils/response');
 
 const leagues = (controllers) => {
   router.post('/', async (req, res, next) => {

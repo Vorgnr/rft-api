@@ -58,6 +58,14 @@ class Match extends BaseModel {
     }
   }
 
+  moderate() {
+    if (!this.completed_at) {
+      throw new BadRequestError('Can not moderate not completed match');
+    }
+
+    this.moderated_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
+  }
+
   complete() {
     this.completed_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
   }
@@ -131,11 +139,16 @@ class Match extends BaseModel {
       'player2_ragequit',
       'player2_forfeit',
       'completed_at',
+      'moderated_at',
     ];
   }
 
   static get readSchema() {
     return this.schema;
+  }
+
+  static get customInternalKeys() {
+    return ['completed_at', 'moderated_at', 'id'];
   }
 }
 

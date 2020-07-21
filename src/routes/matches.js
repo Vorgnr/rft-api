@@ -1,5 +1,7 @@
 const router = require('express').Router();
-const { errorHander, mustBeAuth, mustOwnMatch } = require('../utils/response');
+const {
+  errorHander, mustBeAuth, mustOwnMatch, mustBeAdmin,
+} = require('../utils/response');
 
 const matches = (controllers) => {
   router.post('/', async (req, res, next) => {
@@ -27,6 +29,17 @@ const matches = (controllers) => {
     try {
       mustOwnMatch(req);
       const match = await controllers.MatchController.update(req.params.matchId, req.body);
+      res.json(match);
+    } catch (error) {
+      errorHander(error, res);
+    }
+    next();
+  });
+
+  router.put('/:matchId/moderate', async (req, res, next) => {
+    try {
+      mustBeAdmin(req);
+      const match = await controllers.MatchController.moderate(req.params.matchId);
       res.json(match);
     } catch (error) {
       errorHander(error, res);

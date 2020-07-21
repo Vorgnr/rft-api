@@ -1,7 +1,7 @@
 const BaseController = require('./base-controller');
 const Match = require('../models/match');
 const Player = require('../models/player');
-const { pick } = require('../utils/object');
+const { pick, omit } = require('../utils/object');
 
 const playerGetElo = (player, elos, league) => {
   const eloss = elos.filter((e) => e.player_id === player.id && e.league_id === league.id);
@@ -110,25 +110,24 @@ class MatchController extends BaseController {
   }
 
   async create(body) {
-    const match = new Match({ ...body });
-    let toBeCreated = body;
-
-    if (match.completed_at) {
-      toBeCreated = await this.distributeElo(match, body);
-    }
-
-    const createdMatch = await this.repository.create(toBeCreated);
+    const cleanBody = omit(Match.customInternalKeys, body);
+    const match = new Match({ ...cleanBody });
+    const createdMatch = await this.repository.create(cleanBody);
     return new Match({ ...match, ...createdMatch }).toJson();
   }
 
   async update(id, body) {
     const matchBefore = await this.get(id);
-    const match = new Match({ ...matchBefore, ...body });
-    let toBeUpdated = body;
+    const cleanBody = omit(Match.customInternalKeys, body);
+    const match = new Match({ ...matchBefore, ...cleanBody });
+    const updatedMatch = await this.repository.update(id, cleanBody);
+    return new Match({ ...match, ...updatedMatch }).toJson();
+  }
 
-    if (!matchBefore.completed_at && match.completed_at) {
-      toBeUpdated = await this.distributeElo(match, body);
-    }
+  async moderate(id) {
+    const match = new Match(await this.get(id));
+    match.moderate();
+    const toBeUpdated = await this.distributeElo(match, {});
     const updatedMatch = await this.repository.update(id, toBeUpdated);
     return new Match({ ...match, ...updatedMatch }).toJson();
   }
