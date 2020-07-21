@@ -27,4 +27,6 @@ module.exports = {
   mefirst: 'MeFirst',
   bakanokira: 'BakaNoKira',
   valiant: 'Valiant',
+  theone: 'TheOne_60',
+  nidaime: 'Nidaime',
 };

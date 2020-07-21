@@ -1,24 +1,43 @@
 const csv = require('csv-parser');
 const fs = require('fs');
+const isValid = require('date-fns/isValid');
 const nameCorrection = require('./player-name-errors');
 
 const results = [];
 let playerMatch = [];
-let playerMatchName;
 
 fs.createReadStream(`${__dirname}/resultPC.csv`)
   .pipe(csv())
   .on('data', (data) => results.push(data))
   .on('end', () => {
-    // 'Ricochet win vs The Nicest Guy v2 10-1'
     playerMatch = results
-      .map((r) => r.Interaction.split(' win vs '))
-      .map((item) => {
+      .map((r) => ({ item: r.Interaction.split(' win vs '), row: r }))
+      .map(({ item, row }) => {
         const len = item.length;
+        const rowDate = row['Date et Heure'];
+        const winner = row['Points Winner'];
+        const loser = row['Points Loser'];
+
+        const m = rowDate.match(/\w+\s(\d{1,2})\/(\d{1,2})\/2020\sà\s(\d{1,2})h(\d*)/);
+        if (!m) {
+          return {
+            dirty: true,
+            row,
+          };
+        }
+        const [, day, month, hours, minutes] = m;
+        const completedAt = new Date(2020, Number.parseInt(month, 10) - 1, Number.parseInt(day, 10), Number.parseInt(hours, 10), Number.parseInt(minutes || 0, 10));
+        if (!isValid(completedAt)) {
+          return {
+            dirty: true,
+            row,
+          };
+        }
+
         if (len !== 2) {
           return {
             dirty: true,
-            item,
+            row,
           };
         }
         let [player1, right] = item;
@@ -26,13 +45,13 @@ fs.createReadStream(`${__dirname}/resultPC.csv`)
         if (!match) {
           return {
             dirty: true,
-            item,
+            row,
           };
         }
         if (match.length !== 4) {
           return {
             dirty: true,
-            item,
+            row,
           };
         }
         let [, player2, player1score, player2score] = match;
@@ -47,23 +66,14 @@ fs.createReadStream(`${__dirname}/resultPC.csv`)
           player2,
           player1score,
           player2score,
+          completedAt,
+          winner,
+          loser,
         };
       }, {});
 
     const data = JSON.stringify(playerMatch);
     fs.writeFileSync(`${__dirname}/out/matchesPC.json`, data);
-
-    playerMatchName = playerMatch
-      .filter((m) => !m.dirty)
-      .reduce((acc, m) => {
-        if (acc.indexOf(m.player1) === -1) {
-          acc.push(m.player1);
-        }
-        if (acc.indexOf(m.player2) === -1) {
-          acc.push(m.player2);
-        }
-        return acc;
-      }, []);
   });
 
 const players = [];
