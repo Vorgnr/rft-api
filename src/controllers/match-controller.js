@@ -87,6 +87,8 @@ class MatchController extends BaseController {
 
     if (loser.ragequit) {
       losingElo += league.ragequit_penalty;
+    } else if (loser.forfeit) {
+      winningElo = 0;
     }
 
     toBeUpdated.player1_elo = winner.isPlayer1 ? winningElo : -losingElo;

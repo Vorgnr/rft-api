@@ -62,6 +62,22 @@ class Match extends BaseModel {
     this.completed_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
   }
 
+  isPlayer1Won() {
+    if (this.player2_ragequit || this.player2_forfeit) {
+      return true;
+    }
+
+    if (this.player1_ragequit || this.player1_forfeit) {
+      return false;
+    }
+
+    if (this.player1_score > this.player2_score) {
+      return true;
+    }
+
+    return false;
+  }
+
   getResults() {
     if (!this.completed_at) {
       return false;
@@ -72,6 +88,7 @@ class Match extends BaseModel {
       isPlayer1: true,
       score: this.player1_score,
       ragequit: this.player1_ragequit,
+      forfeit: this.player1_forfeit,
     };
 
     const player2 = {
@@ -79,9 +96,10 @@ class Match extends BaseModel {
       isPlayer1: false,
       score: this.player2_score,
       ragequit: this.player2_ragequit,
+      forfeit: this.player2_forfeit,
     };
 
-    if (this.player2_ragequit || this.player1_score > this.player2_score) {
+    if (this.isPlayer1Won()) {
       return { winner: player1, loser: player2 };
     }
 
@@ -109,7 +127,9 @@ class Match extends BaseModel {
       'player1_score',
       'player2_score',
       'player1_ragequit',
+      'player1_forfeit',
       'player2_ragequit',
+      'player2_forfeit',
       'completed_at',
     ];
   }
