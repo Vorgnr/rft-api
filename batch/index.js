@@ -5,6 +5,7 @@ const nameCorrection = require('./player-name-errors');
 
 const results = [];
 let playerMatch = [];
+const duplicatedDate = {};
 
 fs.createReadStream(`${__dirname}/resultPC.csv`)
   .pipe(csv())
@@ -25,8 +26,9 @@ fs.createReadStream(`${__dirname}/resultPC.csv`)
             row,
           };
         }
-        const [, day, month, hours, minutes] = m;
-        const completedAt = new Date(2020, Number.parseInt(month, 10) - 1, Number.parseInt(day, 10), Number.parseInt(hours, 10), Number.parseInt(minutes || 0, 10));
+        const [, day, month, hours, strMinutes] = m;
+        const minutes = Number.parseInt(strMinutes || 0, 10);
+        let completedAt = new Date(2020, Number.parseInt(month, 10) - 1, Number.parseInt(day, 10), Number.parseInt(hours, 10), minutes);
         if (!isValid(completedAt)) {
           return {
             dirty: true,
@@ -61,6 +63,26 @@ fs.createReadStream(`${__dirname}/resultPC.csv`)
         if (nameCorrection[player2.toLowerCase()]) {
           player2 = nameCorrection[player2.toLowerCase()];
         }
+
+        if (!duplicatedDate[completedAt]) {
+          duplicatedDate[completedAt] = {};
+        }
+
+        if (!duplicatedDate[completedAt][player1]) {
+          duplicatedDate[completedAt][player1] = 0;
+        }
+        duplicatedDate[completedAt][player1] += 1;
+
+        if (!duplicatedDate[completedAt][player2]) {
+          duplicatedDate[completedAt][player2] = 0;
+        }
+        duplicatedDate[completedAt][player2] += 1;
+
+        if (duplicatedDate[completedAt][player1] > 1 || duplicatedDate[completedAt][player2] > 1) {
+          console.log('Duplicated', player1, 'vs', player2, completedAt);
+          completedAt = new Date(completedAt.getTime() - 1000 * 60);
+        }
+
         return {
           player1,
           player2,
