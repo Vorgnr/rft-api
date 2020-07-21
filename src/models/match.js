@@ -25,6 +25,10 @@ class Match extends BaseModel {
       throw new BadRequestError('Match ft must be positive integer');
     }
 
+    if (!this.player1_id || !this.player2_id) {
+      throw new BadRequestError('Player 1 and 2 Ids are required');
+    }
+
     if (this.player1_id === this.player2_id) {
       throw new BadRequestError('Player can not fight himself. Tyler');
     }
