@@ -4,7 +4,8 @@ const Player = require('../models/player');
 const { pick } = require('../utils/object');
 
 const playerGetElo = (player, elos, league) => {
-  const elo = elos.filter((e) => e.player_id === player.id)[0];
+  const eloss = elos.filter((e) => e.player_id === player.id && e.league_id === league.id);
+  const elo = eloss[0];
   if (elo) {
     return {
       hasElo: true,
@@ -89,9 +90,9 @@ class MatchController extends BaseController {
     }
 
     toBeUpdated.player1_elo = winner.isPlayer1 ? winningElo : -losingElo;
-    toBeUpdated.player1_previous_elo = winnerElo.value;
+    toBeUpdated.player1_previous_elo = winner.isPlayer1 ? winnerElo.value : loserElo.value;
     toBeUpdated.player2_elo = winner.isPlayer1 ? -losingElo : winningElo;
-    toBeUpdated.player2_previous_elo = loserElo.value;
+    toBeUpdated.player2_previous_elo = winner.isPlayer1 ? loserElo.value : winnerElo.value;
 
     await updateElo(this.controllers.EloController, {
       winnerElo,
@@ -165,7 +166,7 @@ class MatchController extends BaseController {
     };
 
     const cleanOrderBy = orderBy
-    || ['match.created_at', 'desc'];
+    || ['match.completed_at', 'desc'];
 
     const items = await this.repository.list({
       filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, innerJoins,
