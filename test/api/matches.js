@@ -193,7 +193,7 @@ describe('Match API', () => {
     });
   });
 
-  describe.only('PUT /:matchId/moderate', () => {
+  describe('PUT /:matchId/moderate', () => {
     before(async () => global.test.clear());
     describe('when match does not exist', () => {
       it('should return a 404 error', async () => {
