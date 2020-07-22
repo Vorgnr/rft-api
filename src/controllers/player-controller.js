@@ -89,10 +89,17 @@ class PlayerController extends BaseController {
       filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, leftOuterJoin,
     });
 
-    return items.map(({ elo, player }) => ({
-      elo,
-      player: pick(player, Player.readSchema),
-    }));
+    return items.map((item) => {
+      if (withElo) {
+        const { elo, player } = item;
+        return {
+          elo,
+          player: pick(player, Player.readSchema),
+        };
+      }
+
+      return pick(item, Player.readSchema);
+    });
   }
 }
 
