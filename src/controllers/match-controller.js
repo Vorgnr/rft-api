@@ -127,7 +127,7 @@ class MatchController extends BaseController {
   async moderate(id) {
     const match = new Match(await this.get(id));
     match.moderate();
-    const toBeUpdated = await this.distributeElo(match, {});
+    const toBeUpdated = await this.distributeElo(match, { moderated_at: match.moderated_at });
     const updatedMatch = await this.repository.update(id, toBeUpdated);
     return new Match({ ...match, ...updatedMatch }).toJson();
   }
@@ -167,7 +167,7 @@ class MatchController extends BaseController {
     };
 
     const cleanOrderBy = orderBy
-    || ['match.completed_at', 'desc'];
+    || ['match.updated_at', 'desc'];
 
     const items = await this.repository.list({
       filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, innerJoins,

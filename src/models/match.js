@@ -64,10 +64,12 @@ class Match extends BaseModel {
     }
 
     this.moderated_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
+    this.updated_at = this.moderated_at;
   }
 
   complete() {
     this.completed_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
+    this.updated_at = this.completed_at;
   }
 
   isPlayer1Won() {
@@ -140,6 +142,7 @@ class Match extends BaseModel {
       'player2_forfeit',
       'completed_at',
       'moderated_at',
+      'updated_at',
     ];
   }
 
@@ -148,7 +151,7 @@ class Match extends BaseModel {
   }
 
   static get customInternalKeys() {
-    return ['completed_at', 'moderated_at', 'id'];
+    return ['completed_at', 'moderated_at', 'id', 'updated_at'];
   }
 }
 

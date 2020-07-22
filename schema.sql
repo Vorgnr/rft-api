@@ -28,7 +28,9 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
   `is_admin` BOOLEAN DEFAULT 0,
   `is_frozen` BOOLEAN DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`),
+  CONSTRAINT name_unique UNIQUE (name)
+)
 ENGINE = InnoDB;
 
 CREATE INDEX IF NOT EXISTS player_search_id ON `rftdb`.`player` (`id`) USING BTREE;
@@ -109,6 +111,8 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
   `player2_forfeit` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `completed_at` DATETIME NULL,
+  `moderated_at` DATETIME NULL,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`, `league_id`, `player1_id`, `player2_id`),
   INDEX `fk_match_league1_idx` (`league_id` ASC) VISIBLE,
   INDEX `fk_match_player1_idx` (`player1_id` ASC) VISIBLE,
