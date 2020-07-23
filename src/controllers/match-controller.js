@@ -164,6 +164,14 @@ class MatchController extends BaseController {
       if (filters.league_id) {
         qb.where('league_id', '=', filters.league_id);
       }
+
+      if (filters.moderated_at === null) {
+        qb.where('moderated_at', 'is', null);
+      }
+
+      if (filters.completed_at === null) {
+        qb.where('completed_at', 'is', null);
+      }
     };
 
     const cleanOrderBy = orderBy
