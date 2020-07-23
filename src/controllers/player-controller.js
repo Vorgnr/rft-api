@@ -35,7 +35,7 @@ class PlayerController extends BaseController {
 
     let toSave = body;
     if (body.password) {
-      await player.hashPassword();
+      player.hashPassword();
       toSave = {
         ...body,
         password: player.password,
@@ -53,7 +53,7 @@ class PlayerController extends BaseController {
       throw new UnauthorizedError(wrongId);
     }
 
-    if (!await player.comparePassword(password)) {
+    if (!player.comparePassword(password)) {
       throw new UnauthorizedError(wrongId);
     }
 

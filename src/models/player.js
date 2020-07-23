@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const BaseModel = require('./base-model');
 const { BadRequestError } = require('../static/errors');
 
@@ -15,12 +15,13 @@ class Player extends BaseModel {
     }
   }
 
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
+  hashPassword() {
+    const salt = bcrypt.genSaltSync(10);
+    this.password = bcrypt.hashSync(this.password, salt);
   }
 
-  async comparePassword(plainText) {
-    return bcrypt.compare(plainText, this.password);
+  comparePassword(plainText) {
+    return bcrypt.compareSync(plainText, this.password);
   }
 
   static get modelName() {
