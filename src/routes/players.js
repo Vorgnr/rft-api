@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { errorHander, mustBeAuth, mustOwnPlayer } = require('../utils/response');
+const { omit } = require('../utils/object');
 
 const players = (controllers) => {
   router.post('/', async (req, res, next) => {
@@ -26,6 +27,9 @@ const players = (controllers) => {
     try {
       mustBeAuth(req);
       mustOwnPlayer(req);
+      if (!req.session.player.is_admim) {
+        req.body = omit(['is_admin'], req.body);
+      }
       const player = await controllers.PlayerController.update(req.params.playerId, req.body);
       res.json(player);
     } catch (error) {

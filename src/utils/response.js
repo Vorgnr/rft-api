@@ -18,8 +18,8 @@ const mustBeAuth = (req) => {
 };
 
 const mustBeAdmin = (req) => {
-  if (!req.session.player && !req.session.player.is_admim) {
-    throw new UnauthorizedError('Must be auth');
+  if (!req.session.player || !req.session.player.is_admin) {
+    throw new UnauthorizedError('Must be admin');
   }
 };
 
