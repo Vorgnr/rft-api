@@ -111,7 +111,7 @@ const insertMatch = async (matches, knex, ax) => {
       };
       const request = await ax.post('/matches', body)
         .catch((err) => {
-          console.log(err.response.data, body);
+          console.log(err.response.data);
           throw err;
         });
 
@@ -123,7 +123,7 @@ const insertMatch = async (matches, knex, ax) => {
         await knex('match').where({ id }).update({ completed_at: format(dt, 'yyyy-MM-dd HH:mm:ss') });
         await ax.put(`/matches/${id}/moderate`)
           .catch((err) => {
-            console.log(err);
+            console.log(err.response.data);
           });
       }
 
@@ -131,7 +131,7 @@ const insertMatch = async (matches, knex, ax) => {
       console.log('done ', i, '/', matches.length);
     }
   } catch (err) {
-    console.log('Zrer', err);
+    console.log(err);
   }
 };
 
