@@ -29,7 +29,7 @@ module.exports = {
   valiant: 'Valiant',
   theone: 'TheOne_60',
   nidaime: 'Nidaime',
-  tgs_hadoudouken: 'Hadoudouken',
+  'tsg-hadoudouken': 'Hadoudouken',
   akuman: 'AKUMAN',
   trunksking: 'trunksking',
   dineda: 'Dineda',
