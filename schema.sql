@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
 )
 ENGINE = InnoDB;
 
-CREATE INDEX IF NOT EXISTS player_search_id ON `rftdb`.`player` (`id`) USING BTREE;
-CREATE INDEX IF NOT EXISTS player_search_name ON `rftdb`.`player` (`name`) USING BTREE;
-CREATE INDEX IF NOT EXISTS player_search_eamil ON `rftdb`.`player` (`email`) USING BTREE;
+CREATE INDEX player_search_id ON `rftdb`.`player` (`id`) USING BTREE;
+CREATE INDEX player_search_name ON `rftdb`.`player` (`name`) USING BTREE;
+CREATE INDEX player_search_eamil ON `rftdb`.`player` (`email`) USING BTREE;
 
 
 -- -----------------------------------------------------
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
-CREATE INDEX IF NOT EXISTS league_search_id ON `rftdb`.`league` (`id`) USING BTREE;
+CREATE INDEX league_search_id ON `rftdb`.`league` (`id`) USING BTREE;
 
 
 -- -----------------------------------------------------
@@ -69,8 +69,8 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
   `player_id` VARCHAR(36) NOT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`, `league_id`, `player_id`),
-  INDEX `fk_elo_league_idx` (`league_id` ASC) VISIBLE,
-  INDEX `fk_elo_player1_idx` (`player_id` ASC) VISIBLE,
+  INDEX `fk_elo_league_idx` (`league_id` ASC),
+  INDEX `fk_elo_player1_idx` (`player_id` ASC),
   CONSTRAINT `fk_elo_league`
     FOREIGN KEY (`league_id`)
     REFERENCES `rftdb`.`league` (`id`)
@@ -83,8 +83,8 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX IF NOT EXISTS elo_search_league_id ON `rftdb`.`elo` (`league_id`) USING BTREE;
-CREATE INDEX IF NOT EXISTS elo_search_player_id ON `rftdb`.`elo` (`player_id`) USING BTREE;
+CREATE INDEX elo_search_league_id ON `rftdb`.`elo` (`league_id`) USING BTREE;
+CREATE INDEX elo_search_player_id ON `rftdb`.`elo` (`player_id`) USING BTREE;
 
 
 -- -----------------------------------------------------
@@ -114,9 +114,9 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
   `moderated_at` DATETIME NULL,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`, `league_id`, `player1_id`, `player2_id`),
-  INDEX `fk_match_league1_idx` (`league_id` ASC) VISIBLE,
-  INDEX `fk_match_player1_idx` (`player1_id` ASC) VISIBLE,
-  INDEX `fk_match_player2_idx` (`player2_id` ASC) VISIBLE,
+  INDEX `fk_match_league1_idx` (`league_id` ASC),
+  INDEX `fk_match_player1_idx` (`player1_id` ASC),
+  INDEX `fk_match_player2_idx` (`player2_id` ASC),
   CONSTRAINT `fk_match_league1`
     FOREIGN KEY (`league_id`)
     REFERENCES `rftdb`.`league` (`id`)
@@ -134,10 +134,10 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX IF NOT EXISTS match_search_id ON `rftdb`.`match` (`id`) USING BTREE;
-CREATE INDEX IF NOT EXISTS match_search_league_id ON `rftdb`.`match` (`league_id`) USING BTREE;
-CREATE INDEX IF NOT EXISTS match_search_player1_id ON `rftdb`.`match` (`player1_id`) USING BTREE;
-CREATE INDEX IF NOT EXISTS match_search_player2_id ON `rftdb`.`match` (`player2_id`) USING BTREE;
+CREATE INDEX match_search_id ON `rftdb`.`match` (`id`) USING BTREE;
+CREATE INDEX match_search_league_id ON `rftdb`.`match` (`league_id`) USING BTREE;
+CREATE INDEX match_search_player1_id ON `rftdb`.`match` (`player1_id`) USING BTREE;
+CREATE INDEX match_search_player2_id ON `rftdb`.`match` (`player2_id`) USING BTREE;
 
 -- -----------------------------------------------------
 -- Table `rftdb`.`sessions`
@@ -150,8 +150,8 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`sessions` (
 )
 ENGINE = InnoDB;
 
-CREATE INDEX IF NOT EXISTS sessions_pkey ON `rftdb`.`sessions` (`sid`) USING BTREE;
-CREATE INDEX IF NOT EXISTS sessions_expired_index ON `rftdb`.`sessions` (`expired`) USING BTREE;
+CREATE INDEX sessions_pkey ON `rftdb`.`sessions` (`sid`) USING BTREE;
+CREATE INDEX sessions_expired_index ON `rftdb`.`sessions` (`expired`) USING BTREE;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
