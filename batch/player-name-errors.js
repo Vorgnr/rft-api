@@ -41,4 +41,5 @@ module.exports = {
   qwarzk: 'Qwarzk-',
   'Qwark-': 'Qwarzk-',
   'ftl raymond347': 'Raymond347',
+  'deus.dougfromparis': 'DougFromParis',
 };
