@@ -69,7 +69,7 @@ NODE_ENV=development
 ### Database
 
 ```
-docker run --name rft_mariadb -p 3306:3306 -p 33060:33060 -e MYSQL_ROOT_PASSWORD=password -d mariadb:latest
+docker run --name rft_mariadb -p 3306:3306 -p 33060:33060 -e MYSQL_ROOT_PASSWORD=password TZ=Europe/Paris -d mariadb:latest
 docker exec -i rft_mariadb sh -c 'exec mysql -uroot -p"password"' < PATH/to/schema.sql
 ```
 

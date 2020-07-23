@@ -116,11 +116,11 @@ const insertMatch = async (matches, knex, ax) => {
         });
 
       const { id } = request.data;
-      const d = new Date(m.completedAt);
-      if (!isValid(d)) {
+      const dt = new Date(m.completedAt);
+      if (!isValid(dt)) {
         console.log('date is not valid', m);
       } else {
-        await knex('match').where({ id }).update({ completed_at: format(new Date(m.completedAt), 'yyyy-MM-dd HH:mm:ss') });
+        await knex('match').where({ id }).update({ completed_at: format(dt, 'yyyy-MM-dd HH:mm:ss') });
         await ax.put(`/matches/${id}/moderate`)
           .catch((err) => {
             console.log(err);
