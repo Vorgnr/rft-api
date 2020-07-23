@@ -120,7 +120,7 @@ class MatchController extends BaseController {
     const matchBefore = await this.get(id);
     const cleanBody = omit(Match.customInternalKeys, body);
     const match = new Match({ ...matchBefore, ...cleanBody });
-    const updatedMatch = await this.repository.update(id, cleanBody);
+    const updatedMatch = await this.repository.update(id, match);
     return new Match({ ...match, ...updatedMatch }).toJson();
   }
 
