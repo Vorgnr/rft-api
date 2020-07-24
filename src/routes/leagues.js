@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { errorHander, mustBeAdmin } = require('../utils/response');
 
 const leagues = (controllers) => {
-  router.post('/', async (req, res, next) => {
+  router.post('/', async (req, res) => {
     try {
       mustBeAdmin(req);
       const league = await controllers.LeagueController.create(req.body);
@@ -10,20 +10,18 @@ const leagues = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.get('/:leagueId', async (req, res, next) => {
+  router.get('/:leagueId', async (req, res) => {
     try {
       const league = await controllers.LeagueController.get(req.params.leagueId);
       res.json(league);
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.put('/:leagueId', async (req, res, next) => {
+  router.put('/:leagueId', async (req, res) => {
     try {
       mustBeAdmin(req);
       const league = await controllers.LeagueController.update(req.params.leagueId, req.body);
@@ -31,10 +29,9 @@ const leagues = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.get('/', async (req, res, next) => {
+  router.get('/', async (req, res) => {
     try {
       const {
         page, perPage, name, orderBy,
@@ -51,7 +48,6 @@ const leagues = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
   return router;

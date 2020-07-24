@@ -4,7 +4,7 @@ const {
 } = require('../utils/response');
 
 const matches = (controllers) => {
-  router.post('/', async (req, res, next) => {
+  router.post('/', async (req, res) => {
     try {
       mustBeAuth(req);
       const match = await controllers.MatchController.create(req.body);
@@ -12,20 +12,18 @@ const matches = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.get('/:matchId', async (req, res, next) => {
+  router.get('/:matchId', async (req, res) => {
     try {
       const match = await controllers.MatchController.get(req.params.matchId);
       res.json(match);
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.put('/:matchId', async (req, res, next) => {
+  router.put('/:matchId', async (req, res) => {
     try {
       mustOwnMatch(req);
       const match = await controllers.MatchController.update(req.params.matchId, req.body);
@@ -33,10 +31,9 @@ const matches = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.put('/:matchId/moderate', async (req, res, next) => {
+  router.put('/:matchId/moderate', async (req, res) => {
     try {
       mustBeAdmin(req);
       const match = await controllers.MatchController.moderate(req.params.matchId);
@@ -44,10 +41,9 @@ const matches = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.get('/', async (req, res, next) => {
+  router.get('/', async (req, res) => {
     try {
       const {
         page, perPage, leagueId, name, matchId, orderBy, moderatedAt, completedAt,
@@ -68,7 +64,6 @@ const matches = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
   return router;

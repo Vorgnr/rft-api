@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { errorHander } = require('../utils/response');
 
 const eloRoutes = (controllers) => {
-  router.get('/', async (req, res, next) => {
+  router.get('/', async (req, res) => {
     try {
       const {
         page, perPage, playerId, leagueId, orderBy,
@@ -18,7 +18,6 @@ const eloRoutes = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
   return router;

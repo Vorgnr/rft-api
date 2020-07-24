@@ -3,27 +3,25 @@ const { errorHander, mustBeAuth, mustOwnPlayer } = require('../utils/response');
 const { omit } = require('../utils/object');
 
 const players = (controllers) => {
-  router.post('/', async (req, res, next) => {
+  router.post('/', async (req, res) => {
     try {
       const player = await controllers.PlayerController.create(req.body);
       res.json(player);
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.get('/:playerId', async (req, res, next) => {
+  router.get('/:playerId', async (req, res) => {
     try {
       const player = await controllers.PlayerController.get(req.params.playerId);
       res.json(player);
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.put('/:playerId', async (req, res, next) => {
+  router.put('/:playerId', async (req, res) => {
     try {
       mustBeAuth(req);
       mustOwnPlayer(req);
@@ -35,10 +33,9 @@ const players = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
-  router.get('/', async (req, res, next) => {
+  router.get('/', async (req, res) => {
     try {
       const {
         page, perPage, name, leagueId, orderBy, withElo,
@@ -54,7 +51,6 @@ const players = (controllers) => {
     } catch (error) {
       errorHander(error, res);
     }
-    next();
   });
 
   return router;

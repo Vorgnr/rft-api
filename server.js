@@ -10,8 +10,6 @@ const config = require('./config');
 const setup = require('./src/setup');
 const routes = require('./src/routes');
 
-let app = express();
-
 dotenv.config();
 
 const port = process.env.PORT;
@@ -19,6 +17,7 @@ const env = process.env.NODE_ENV;
 const frontApp = process.env.FRONT_APP;
 const sessionSecret = process.env.SESSION_SECRET;
 const sessionMaxAge = process.env.SESSION_MAXAGE;
+let app = express();
 
 module.exports = {
   start: async (args = {}) => {
@@ -45,7 +44,7 @@ module.exports = {
         name: 'rftapisid',
         maxAge: Number(sessionMaxAge),
       },
-      secure: env !== 'development',
+      secure: false,
       store,
     }));
 
@@ -83,6 +82,9 @@ module.exports = {
       next();
     });
 
+    if (args.noListen) {
+      return app;
+    }
     return new Promise((resolve) => {
       app = app.listen(port, () => {
         debug('RFT Api listening port %d', port);
