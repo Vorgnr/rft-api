@@ -12,7 +12,6 @@ const setup = require('./src/setup');
 const routes = require('./src/routes');
 
 dotenv.config();
-
 const port = process.env.PORT;
 const env = process.env.NODE_ENV;
 const frontApp = process.env.FRONT_APP;
@@ -95,6 +94,7 @@ module.exports = {
     return new Promise((resolve) => {
       app = app.listen(port, () => {
         debug('RFT Api listening port %d', port);
+        debug('Allowing %s only', frontApp);
         resolve(knex);
       });
     });
