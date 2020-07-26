@@ -55,8 +55,8 @@ const matches = (controllers) => {
       if (leagueId) filters.league_id = leagueId;
       if (name) filters.name = name;
       if (matchId) filters.matchId = matchId;
-      if (moderatedAt === 'null') filters.moderated_at = null;
-      if (completedAt === 'null') filters.completed_at = null;
+      if (['0', '1'].indexOf(moderatedAt) > -1) filters.moderated_at = moderatedAt;
+      if (['0', '1'].indexOf(completedAt) > -1) filters.completed_at = completedAt;
       const results = await controllers.MatchController.list({
         page, perPage, filters, orderBy,
       });

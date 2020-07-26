@@ -165,12 +165,16 @@ class MatchController extends BaseController {
         qb.where('league_id', '=', filters.league_id);
       }
 
-      if (filters.moderated_at === null) {
+      if (filters.moderated_at === '0') {
         qb.where('moderated_at', 'is', null);
+      } else if (filters.moderated_at === '1') {
+        qb.where('moderated_at', 'is not', null);
       }
 
-      if (filters.completed_at === null) {
+      if (filters.completed_at === '0') {
         qb.where('completed_at', 'is', null);
+      } else if (filters.completed_at === '1') {
+        qb.where('completed_at', 'is not', null);
       }
     };
 

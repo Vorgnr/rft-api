@@ -6,7 +6,7 @@
   "scripts": {
     "build": "docker build -t cloud.canister.io:5000/vorgnr/rft-api .",
     "push": "docker push cloud.canister.io:5000/vorgnr/rft-api",
-    "start": "node index.js",
+    "start": "DEBUG=rft:* NODE_ENV=development node index.js",
     "prod": "DEBUG=rft:* NODE_ENV=production node index.js",
     "lint": "eslint .",
     "test": "PORT=1337 NODE_ENV=test mocha --file ./test/setup.js ./test/api"
