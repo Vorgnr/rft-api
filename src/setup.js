@@ -14,6 +14,7 @@ const EloController = require('./controllers/elo-controller');
 const dblog = debug('rft:database');
 
 const getKnex = async (config) => {
+  dblog('Mysql config %s@%s', config.user, config.host);
   const dbInstance = knex({
     client: 'mysql',
     connection: config,
