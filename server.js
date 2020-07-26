@@ -5,6 +5,7 @@ const debug = require('debug')('rft:server');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const cors = require('cors');
 
 const config = require('./config');
 const setup = require('./src/setup');
@@ -15,6 +16,7 @@ dotenv.config();
 const port = process.env.PORT;
 const env = process.env.NODE_ENV;
 const frontApp = process.env.FRONT_APP;
+
 const sessionSecret = process.env.SESSION_SECRET;
 const sessionMaxAge = process.env.SESSION_MAXAGE;
 let app = express();
@@ -25,6 +27,11 @@ module.exports = {
     const { knex, Controllers } = await setup(config.database[env]);
     const store = new KnexSessionStore({ knex });
     debug('%d Controllers ok ...', Object.keys(Controllers).length);
+
+    app.use(cors({
+      credentials: true,
+      origin: frontApp,
+    }));
 
     app.use((req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', frontApp);
