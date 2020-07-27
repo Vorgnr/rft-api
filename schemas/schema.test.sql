@@ -5,21 +5,21 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema rftdb
+-- Schema rftdbtest
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema rftdb
+-- Schema rftdbtest
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `rftdb`;
-CREATE SCHEMA IF NOT EXISTS `rftdb` DEFAULT CHARACTER SET utf8 ;
-USE `rftdb` ;
+DROP SCHEMA IF EXISTS `rftdbtest`;
+CREATE SCHEMA IF NOT EXISTS `rftdbtest` DEFAULT CHARACTER SET utf8 ;
+USE `rftdbtest` ;
 
 
 -- -----------------------------------------------------
--- Table `rftdb`.`player`
+-- Table `rftdbtest`.`player`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
+CREATE TABLE IF NOT EXISTS `rftdbtest`.`player` (
   `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
   `email` VARCHAR(45) NULL,
@@ -33,15 +33,15 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
 )
 ENGINE = InnoDB;
 
-CREATE INDEX player_search_id ON `rftdb`.`player` (`id`) USING BTREE;
-CREATE INDEX player_search_name ON `rftdb`.`player` (`name`) USING BTREE;
-CREATE INDEX player_search_eamil ON `rftdb`.`player` (`email`) USING BTREE;
+CREATE INDEX player_search_id ON `rftdbtest`.`player` (`id`) USING BTREE;
+CREATE INDEX player_search_name ON `rftdbtest`.`player` (`name`) USING BTREE;
+CREATE INDEX player_search_eamil ON `rftdbtest`.`player` (`email`) USING BTREE;
 
 
 -- -----------------------------------------------------
--- Table `rftdb`.`league`
+-- Table `rftdbtest`.`league`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
+CREATE TABLE IF NOT EXISTS `rftdbtest`.`league` (
   `id` VARCHAR(36) NOT NULL,
   `name` VARCHAR(45) NULL,
   `is_active` BOOLEAN DEFAULT 1,
@@ -55,13 +55,13 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`league` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
-CREATE INDEX league_search_id ON `rftdb`.`league` (`id`) USING BTREE;
+CREATE INDEX league_search_id ON `rftdbtest`.`league` (`id`) USING BTREE;
 
 
 -- -----------------------------------------------------
--- Table `rftdb`.`elo`
+-- Table `rftdbtest`.`elo`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
+CREATE TABLE IF NOT EXISTS `rftdbtest`.`elo` (
   `id` VARCHAR(36) NOT NULL,
   `value` INT NULL,
   `played_matches` INT DEFAULT 0,
@@ -73,24 +73,24 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`elo` (
   INDEX `fk_elo_player1_idx` (`player_id` ASC),
   CONSTRAINT `fk_elo_league`
     FOREIGN KEY (`league_id`)
-    REFERENCES `rftdb`.`league` (`id`)
+    REFERENCES `rftdbtest`.`league` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_elo_player1`
     FOREIGN KEY (`player_id`)
-    REFERENCES `rftdb`.`player` (`id`)
+    REFERENCES `rftdbtest`.`player` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX elo_search_league_id ON `rftdb`.`elo` (`league_id`) USING BTREE;
-CREATE INDEX elo_search_player_id ON `rftdb`.`elo` (`player_id`) USING BTREE;
+CREATE INDEX elo_search_league_id ON `rftdbtest`.`elo` (`league_id`) USING BTREE;
+CREATE INDEX elo_search_player_id ON `rftdbtest`.`elo` (`player_id`) USING BTREE;
 
 
 -- -----------------------------------------------------
--- Table `rftdb`.`match`
+-- Table `rftdbtest`.`match`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
+CREATE TABLE IF NOT EXISTS `rftdbtest`.`match` (
   `id` VARCHAR(36) NOT NULL,
   `character1` VARCHAR(45) NULL,
   `character2` VARCHAR(45) NULL,
@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
   `player1_forfeit` BOOLEAN DEFAULT FALSE,
   `player2_ragequit` BOOLEAN DEFAULT FALSE,
   `player2_forfeit` BOOLEAN DEFAULT FALSE,
+  `is_canceled` BOOLEAN DEFAULT FALSE,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `completed_at` DATETIME NULL,
   `moderated_at` DATETIME NULL,
@@ -119,30 +120,31 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`match` (
   INDEX `fk_match_player2_idx` (`player2_id` ASC),
   CONSTRAINT `fk_match_league1`
     FOREIGN KEY (`league_id`)
-    REFERENCES `rftdb`.`league` (`id`)
+    REFERENCES `rftdbtest`.`league` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_match_player1`
     FOREIGN KEY (`player1_id`)
-    REFERENCES `rftdb`.`player` (`id`)
+    REFERENCES `rftdbtest`.`player` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_match_player2`
     FOREIGN KEY (`player2_id`)
-    REFERENCES `rftdb`.`player` (`id`)
+    REFERENCES `rftdbtest`.`player` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX match_search_id ON `rftdb`.`match` (`id`) USING BTREE;
-CREATE INDEX match_search_league_id ON `rftdb`.`match` (`league_id`) USING BTREE;
-CREATE INDEX match_search_player1_id ON `rftdb`.`match` (`player1_id`) USING BTREE;
-CREATE INDEX match_search_player2_id ON `rftdb`.`match` (`player2_id`) USING BTREE;
+CREATE INDEX match_search_id ON `rftdbtest`.`match` (`id`) USING BTREE;
+CREATE INDEX match_search_league_id ON `rftdbtest`.`match` (`league_id`) USING BTREE;
+CREATE INDEX match_search_player1_id ON `rftdbtest`.`match` (`player1_id`) USING BTREE;
+CREATE INDEX match_search_player2_id ON `rftdbtest`.`match` (`player2_id`) USING BTREE;
+CREATE INDEX match_search_is_canceled ON rftdb.match (is_canceled) using btree;
 
 -- -----------------------------------------------------
--- Table `rftdb`.`sessions`
+-- Table `rftdbtest`.`sessions`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `rftdb`.`sessions` (
+CREATE TABLE IF NOT EXISTS `rftdbtest`.`sessions` (
   `sid` VARCHAR(255) NOT NULL,
   `sess` JSON NOT NULL,
   `expired` DATETIME NOT NULL,
@@ -150,8 +152,8 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`sessions` (
 )
 ENGINE = InnoDB;
 
-CREATE INDEX sessions_pkey ON `rftdb`.`sessions` (`sid`) USING BTREE;
-CREATE INDEX sessions_expired_index ON `rftdb`.`sessions` (`expired`) USING BTREE;
+CREATE INDEX sessions_pkey ON `rftdbtest`.`sessions` (`sid`) USING BTREE;
+CREATE INDEX sessions_expired_index ON `rftdbtest`.`sessions` (`expired`) USING BTREE;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

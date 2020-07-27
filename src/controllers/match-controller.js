@@ -132,6 +132,13 @@ class MatchController extends BaseController {
     return new Match({ ...match, ...updatedMatch }).toJson();
   }
 
+  async cancel(id) {
+    const match = new Match(await this.get(id));
+    match.cancel();
+    await this.repository.update(id, match);
+    return match.toJson();
+  }
+
   async list({
     filters, page, perPage, orderBy,
   }) {
@@ -151,6 +158,8 @@ class MatchController extends BaseController {
     ];
 
     const cleanFilters = (qb) => {
+      qb.where('match.is_canceled', '=', 0);
+
       if (filters.matchId) {
         qb.where('match.id', '=', filters.matchId);
       }

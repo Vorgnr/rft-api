@@ -1,4 +1,5 @@
 const should = require('should/as-function');
+const format = require('date-fns/format');
 
 describe('Match API', () => {
   describe('POST /matches', () => {
@@ -529,6 +530,63 @@ describe('Match API', () => {
     });
   });
 
+  describe('PUT /:matchId/cancel', () => {
+    before(async () => global.test.clear());
+    describe('when match does not exist', () => {
+      it('should return a 404 error', async () => {
+        await global.test.axios.put('/matches/bla/cancel')
+          .then(() => {
+            throw new Error('Unexpected promise resolution');
+          })
+          .catch((err) => {
+            should(err.response).have.property('status', 404);
+          });
+      });
+    });
+
+    describe('when match does exist', () => {
+      describe('when match is moderated', () => {
+        it('should return a 400 error', async () => {
+          await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
+          await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans' });
+          await global.test.knex('league').insert({ id: 'ISL', name: 'International Superstar League' });
+          await global.test.knex('match').insert({
+            id: 'nicematch',
+            player1_id: 'Knee',
+            player2_id: 'Qudans',
+            league_id: 'ISL',
+            ft: 10,
+            moderated_at: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+          });
+          await global.test.axios.put('/matches/nicematch/cancel')
+            .then(() => {
+              throw new Error('Unexpected promise resolution');
+            })
+            .catch((err) => {
+              should(err.response).have.property('status', 400);
+            });
+        });
+      });
+
+      describe('when match is not modetad', () => {
+        it('should cancel match', async () => {
+          await global.test.knex('match').insert({
+            id: '2',
+            player1_id: 'Knee',
+            player2_id: 'Qudans',
+            league_id: 'ISL',
+            ft: 10,
+          });
+          const request = await global.test.axios.put('/matches/2/cancel');
+          should(request).have.property('status', 200);
+          should(request.data).have.property('is_canceled', true);
+          const match = await global.test.knex('match').where({ id: '2' }).select(['is_canceled']);
+          should(match[0]).have.property('is_canceled', 1);
+        });
+      });
+    });
+  });
+
   describe('GET /matches', () => {
     describe('when there is no matches', () => {
       before(async () => {
@@ -576,9 +634,17 @@ describe('Match API', () => {
           league_id: 'ISL',
           ft: 10,
         });
+        await global.test.knex('match').insert({
+          id: '4',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL',
+          is_canceled: 1,
+          ft: 10,
+        });
       });
 
-      it('should return empty array', async () => {
+      it('should not return empty array', async () => {
         const request = await global.test.axios.get('/matches');
         should(request.data).be.an.Array()
           .with.lengthOf(3);

@@ -58,6 +58,13 @@ class Match extends BaseModel {
     }
   }
 
+  cancel() {
+    if (this.moderated_at) {
+      throw new BadRequestError('Can not cancel moderated match');
+    }
+    this.is_canceled = true;
+  }
+
   moderate() {
     if (!this.completed_at) {
       throw new BadRequestError('Can not moderate not completed match');
@@ -140,6 +147,7 @@ class Match extends BaseModel {
       'player1_forfeit',
       'player2_ragequit',
       'player2_forfeit',
+      'is_canceled',
       'completed_at',
       'moderated_at',
       'updated_at',
@@ -151,7 +159,7 @@ class Match extends BaseModel {
   }
 
   static get customInternalKeys() {
-    return ['completed_at', 'moderated_at', 'id', 'updated_at'];
+    return ['is_canceled', 'moderated_at', 'id', 'updated_at'];
   }
 }
 

@@ -43,15 +43,24 @@ const matches = (controllers) => {
     }
   });
 
+  router.put('/:matchId/cancel', async (req, res) => {
+    try {
+      mustBeAdmin(req);
+      const match = await controllers.MatchController.cancel(req.params.matchId);
+      res.json(match);
+    } catch (error) {
+      errorHander(error, res);
+    }
+  });
+
   router.get('/', async (req, res) => {
     try {
       const {
         page, perPage, leagueId, name, matchId, orderBy, moderatedAt, completedAt,
       } = req.query;
 
-      const filters = {
-        is_active: true,
-      };
+      const filters = {};
+
       if (leagueId) filters.league_id = leagueId;
       if (name) filters.name = name;
       if (matchId) filters.matchId = matchId;
