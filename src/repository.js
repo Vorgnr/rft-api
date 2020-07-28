@@ -7,7 +7,7 @@ class Repository {
   }
 
   async get(params) {
-    debug('%s get(%s) request', this.Model.modelName, params);
+    debug('%s get(%s) request', this.Model.modelName);
     const model = await this.knex(this.Model.modelName)
       .where(params);
 
@@ -30,7 +30,7 @@ class Repository {
   }
 
   async update(id, body) {
-    debug('%s update(%s) request %j', this.Model.modelName, id, body);
+    debug('%s update(%s) request %j', this.Model.modelName, id);
     const model = { id, ...body };
     await this.knex(this.Model.modelName)
       .where({ id })
