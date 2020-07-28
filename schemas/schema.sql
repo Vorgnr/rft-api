@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `rftdb`.`player` (
   `main_character` VARCHAR(45) NULL,
   `is_admin` BOOLEAN DEFAULT 0,
   `is_frozen` BOOLEAN DEFAULT 0,
+  `password_recover_request` VARCHAR(36) NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   CONSTRAINT name_unique UNIQUE (name)
@@ -139,7 +140,7 @@ CREATE INDEX match_search_id ON `rftdb`.`match` (`id`) USING BTREE;
 CREATE INDEX match_search_league_id ON `rftdb`.`match` (`league_id`) USING BTREE;
 CREATE INDEX match_search_player1_id ON `rftdb`.`match` (`player1_id`) USING BTREE;
 CREATE INDEX match_search_player2_id ON `rftdb`.`match` (`player2_id`) USING BTREE;
-CREATE INDEX match_search_is_canceled ON rftdb.match (is_canceled) using btree;
+CREATE INDEX match_search_is_canceled ON `rftdb`.`match` (`is_canceled`) using btree;
 -- -----------------------------------------------------
 -- Table `rftdb`.`sessions`
 -- -----------------------------------------------------
