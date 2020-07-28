@@ -3,9 +3,7 @@ const config = require('../../config');
 const { InternalServerError } = require('../static/errors');
 
 AWS.config.update({ region: 'eu-west-2', ...config.mail[process.env.NODE_ENV] });
-const frontApp = process.env.NODE_ENV === 'production'
-  ? process.env.FRONT_APP
-  : 'http://localhost:8080';
+const frontApp = config.front[process.env.NODE_ENV].url;
 
 const recoverPasswordTemplate = (player) => `<html><body>
   <p> ${player.name}, </p>

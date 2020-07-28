@@ -14,9 +14,7 @@ const routes = require('./src/routes');
 dotenv.config();
 const port = process.env.PORT;
 const env = process.env.NODE_ENV;
-const frontApp = env === 'production'
-  ? process.env.FRONT_APP
-  : 'http://localhost:8080';
+const frontApp = config.front[env].url;
 
 const sessionSecret = process.env.SESSION_SECRET;
 const sessionMaxAge = process.env.SESSION_MAXAGE;
