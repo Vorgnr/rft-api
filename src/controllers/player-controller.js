@@ -1,5 +1,10 @@
+const debug = require('debug');
+
+const log = debug('rft:repository:player');
+const mailLog = debug('rft:mail');
 const BaseController = require('./base-controller');
 const Player = require('../models/player');
+const Mailer = require('../utils/mail');
 const { BadRequestError, UnauthorizedError, NotFoundError } = require('../static/errors');
 const { pick } = require('../utils/object');
 
@@ -100,6 +105,42 @@ class PlayerController extends BaseController {
 
       return pick(item, Player.readSchema);
     });
+  }
+
+  async recoverPasswordRequest(body) {
+    if (!body || !body.email) {
+      throw new BadRequestError('Request must contains an email');
+    }
+
+    const { email } = body;
+    const player = await this.repository.get({ email });
+    if (player && player.email) {
+      player.requestPasswordRecover();
+      await this.repository.update(player.id, player);
+      await Mailer.send(player.email, 'PASSWORD_RECOVER', player)
+        .catch((err) => {
+          mailLog('Unable to send mail got error %j', err);
+        });
+    } else {
+      log('Unable to request password recover of %s', body);
+    }
+    return {};
+  }
+
+  async recoverPassword(body) {
+    if (!body || !body.token || !body.password) {
+      throw new BadRequestError('Request must contains an token and password');
+    }
+
+    const { token, password } = body;
+    const player = await this.repository.get({ password_recover_request: token });
+    if (!player) {
+      throw new BadRequestError('Recovery does not exist');
+    }
+    player.password = password;
+    player.hashPassword();
+    await this.repository.update(player.id, { password: player.password });
+    return {};
   }
 }
 

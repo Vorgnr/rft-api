@@ -53,6 +53,24 @@ const players = (controllers) => {
     }
   });
 
+  router.post('/recover-password-request', async (req, res) => {
+    try {
+      const results = await controllers.PlayerController.recoverPasswordRequest(req.body);
+      res.json(results);
+    } catch (error) {
+      errorHander(error, res);
+    }
+  });
+
+  router.post('/recover-password', async (req, res) => {
+    try {
+      const results = await controllers.PlayerController.recoverPassword(req.body);
+      res.json(results);
+    } catch (error) {
+      errorHander(error, res);
+    }
+  });
+
   return router;
 };
 

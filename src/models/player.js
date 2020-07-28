@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 const BaseModel = require('./base-model');
 const { BadRequestError } = require('../static/errors');
 
@@ -20,6 +21,10 @@ class Player extends BaseModel {
     this.password = bcrypt.hashSync(this.password, salt);
   }
 
+  requestPasswordRecover() {
+    this.password_recover_request = uuidv4();
+  }
+
   comparePassword(plainText) {
     return bcrypt.compareSync(plainText, this.password);
   }
@@ -29,7 +34,7 @@ class Player extends BaseModel {
   }
 
   static get schema() {
-    return ['id', 'name', 'email', 'password', 'main_character', 'is_admin', 'is_frozen'];
+    return ['id', 'name', 'email', 'password', 'main_character', 'is_admin', 'is_frozen', 'password_recover_request'];
   }
 
   static get readSchema() {

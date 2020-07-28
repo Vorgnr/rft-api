@@ -5,6 +5,12 @@ class HttpError extends Error {
   }
 }
 
+class InternalServerError extends HttpError {
+  constructor(message) {
+    super({ message, status: 500 });
+  }
+}
+
 class NotFoundError extends HttpError {
   constructor(message) {
     super({ message, status: 404 });
@@ -35,4 +41,5 @@ module.exports = {
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,
+  InternalServerError,
 };
