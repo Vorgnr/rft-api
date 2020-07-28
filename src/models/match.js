@@ -33,7 +33,7 @@ class Match extends BaseModel {
       throw new BadRequestError('Player can not fight himself. Tyler');
     }
 
-    if (this.player1_ragequit || this.player2_ragequit) {
+    if (this.player1_ragequit || this.player2_ragequit || this.player2_forfeit || this.player1_forfeit) {
       this.complete();
     }
 

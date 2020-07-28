@@ -1,0 +1,31 @@
+service: rft-api
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: production
+  region: eu-west-3
+  role: arn:aws:iam::163534910902:role/lambda-vpc-role
+  environment:
+    NODE_ENV: production
+    PORT: 3000
+    DEBUG: rft:*
+    FRONT_APP: http://ranking-tekken.fr
+    SESSION_SECRET: rankingtekkenfranceftwforeverlol
+    SESSION_MAXAGE: 3600000   
+
+functions:
+  api:
+    handler: handler.handler
+    vpc:
+      securityGroupIds:
+        - sg-c68833a7
+      subnetIds:
+        - subnet-ea4f4d83
+        - subnet-3a2f4177
+        - subnet-335a7f48
+    events:
+      - http:
+          path: "{proxy+}"
+          method: ANY
+          cors: true
