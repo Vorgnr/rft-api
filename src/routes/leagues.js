@@ -34,12 +34,13 @@ const leagues = (controllers) => {
   router.get('/', async (req, res) => {
     try {
       const {
-        page, perPage, name, orderBy,
+        page, perPage, name, orderBy, showAll,
       } = req.query;
 
-      const filters = {
-        is_active: true,
-      };
+      const filters = {};
+      if (!showAll) {
+        filters.is_active = true;
+      }
       if (name) filters.name = name;
       const results = await controllers.LeagueController.list({
         page, perPage, filters, orderBy,
