@@ -16,8 +16,6 @@ const port = process.env.PORT;
 const env = process.env.NODE_ENV;
 const frontApp = config.front[env].url;
 
-const sessionSecret = process.env.SESSION_SECRET;
-const sessionMaxAge = process.env.SESSION_MAXAGE;
 let app = express();
 
 module.exports = {
@@ -42,14 +40,14 @@ module.exports = {
 
     app.use(helmet());
     app.set('trust proxy', 1);
+    const cookie = config.cookie[env];
     app.use(session({
-      secret: sessionSecret,
-      resave: false,
+      secret: config.session.secret,
+      name: config.session.name,
+      resave: true,
+      rolling: true,
       saveUninitialized: true,
-      cookie: {
-        name: 'rftapisid',
-        maxAge: Number(sessionMaxAge),
-      },
+      cookie,
       secure: false,
       store,
     }));
