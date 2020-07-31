@@ -28,8 +28,6 @@ module.exports = {
     app.use(cors({
       credentials: true,
       origin: frontApp,
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Forwarded-Proto', 'Cookie', 'Set-Cookie'],
-      exposedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Forwarded-Proto', 'Cookie', 'Set-Cookie'],
     }));
 
     app.use((req, res, next) => {
