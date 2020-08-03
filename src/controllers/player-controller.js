@@ -88,7 +88,7 @@ class PlayerController extends BaseController {
     };
 
     const cleanOrderBy = orderBy
-      || (withElo && ['elo.value', 'desc']);
+      || (withElo && [{ column: 'elo.value', order: 'desc' }, { column: 'player.name', order: 'desc' }]);
 
     const items = await this.repository.list({
       filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, leftOuterJoin,

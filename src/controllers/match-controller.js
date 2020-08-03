@@ -188,7 +188,7 @@ class MatchController extends BaseController {
     };
 
     const cleanOrderBy = orderBy
-    || ['match.updated_at', 'desc'];
+    || [{ column: 'match.updated_at', order: 'desc' }];
 
     const items = await this.repository.list({
       filters: cleanFilters, page, perPage, orderBy: cleanOrderBy, innerJoins,

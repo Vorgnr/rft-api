@@ -48,11 +48,7 @@ class Repository {
       .where(filters);
 
     if (orderBy) {
-      if (typeof orderBy === 'string') {
-        query.orderBy(orderBy);
-      } else {
-        query.orderBy(...orderBy);
-      }
+      query.orderBy(orderBy);
     } else {
       query.orderBy('created_at');
     }
