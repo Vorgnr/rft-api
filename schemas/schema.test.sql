@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS `rftdbtest`.`match` (
   `player2_ragequit` BOOLEAN DEFAULT FALSE,
   `player2_forfeit` BOOLEAN DEFAULT FALSE,
   `is_canceled` BOOLEAN DEFAULT FALSE,
+  `video` VARCHAR(45) NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `completed_at` DATETIME NULL,
   `moderated_at` DATETIME NULL,

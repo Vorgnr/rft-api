@@ -1,0 +1,2 @@
+
+ALTER TABLE rftdb.match ADD COLUMN video VARCHAR(45) DEFAULT NULL;@

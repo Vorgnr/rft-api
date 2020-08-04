@@ -148,6 +148,7 @@ class Match extends BaseModel {
       'player2_ragequit',
       'player2_forfeit',
       'is_canceled',
+      'video',
       'completed_at',
       'moderated_at',
       'updated_at',
