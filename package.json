@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "docker build -t rft-api .",
-    "push": "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 163534910902.dkr.ecr.eu-west-3.amazonaws.com && docker push 163534910902.dkr.ecr.eu-west-3.amazonaws.com/rft-api:latest",
+    "auth": "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 163534910902.dkr.ecr.eu-west-3.amazonaws.com",
+    "tag": "docker tag rft-api:latest 163534910902.dkr.ecr.eu-west-3.amazonaws.com/rft-api:latest",
+    "push": "docker push 163534910902.dkr.ecr.eu-west-3.amazonaws.com/rft-api:latest",
+    "deploy": "npm run build && npm run auth && npm run tag && npm run push",
     "start": "DEBUG=rft:* NODE_ENV=development node index.js",
     "prod": "DEBUG=rft:* NODE_ENV=production node index.js",
     "lint": "eslint .",
