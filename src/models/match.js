@@ -162,6 +162,25 @@ class Match extends BaseModel {
   static get customInternalKeys() {
     return ['is_canceled', 'moderated_at', 'id', 'updated_at'];
   }
+
+  static toUpdateJson(instance) {
+    let { video } = instance;
+    if (typeof video === 'object') {
+      video = JSON.stringify(instance.video);
+    }
+    return super.toUpdateJson({ ...instance, video });
+  }
+
+  static toJson(instance) {
+    return new Match(instance).toJson();
+  }
+
+  toJson() {
+    if (typeof this.video === 'string') {
+      this.video = JSON.parse(this.video);
+    }
+    return super.toJson();
+  }
 }
 
 module.exports = Match;

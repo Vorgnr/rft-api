@@ -195,7 +195,7 @@ class MatchController extends BaseController {
     });
 
     return items.map(({ match, player1, player2 }) => ({
-      match,
+      match: Match.toJson(match),
       player1: pick(player1, Player.readSchema),
       player2: pick(player2, Player.readSchema),
     }));

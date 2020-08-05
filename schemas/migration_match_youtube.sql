@@ -1,2 +1,9 @@
 
 ALTER TABLE rftdb.match ADD COLUMN video VARCHAR(45) DEFAULT NULL;
+
+SET SQL_SAFE_UPDATES = 0;
+UPDATE rftdb.`match`
+SET video = null;
+SET SQL_SAFE_UPDATES = 1;
+
+ALTER TABLE rftdb.match MODIFY video JSON;
