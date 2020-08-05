@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "docker build -t cloud.canister.io:5000/vorgnr/rft-api .",
-    "push": "docker push cloud.canister.io:5000/vorgnr/rft-api",
+    "build": "docker build -t rft-api .",
+    "push": "aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 163534910902.dkr.ecr.eu-west-3.amazonaws.com && docker push 163534910902.dkr.ecr.eu-west-3.amazonaws.com/rft-api:latest",
     "start": "DEBUG=rft:* NODE_ENV=development node index.js",
     "prod": "DEBUG=rft:* NODE_ENV=production node index.js",
     "lint": "eslint .",
