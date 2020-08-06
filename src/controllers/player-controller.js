@@ -17,6 +17,36 @@ class PlayerController extends BaseController {
     return pick(entity.toJson(), Player.readSchema);
   }
 
+  async update(id, payload) {
+    const player = await this.get(id);
+    const changedKeys = Object.keys(payload).filter((k) => player[k] !== payload[k]);
+    if (!changedKeys.length) {
+      return player;
+    }
+    const body = pick(payload, changedKeys);
+    if (body.name) {
+      const players = await this.repository.list({
+        filters: (qb) => {
+          qb.whereRaw('lower(name) = ?', [body.name.toLowerCase()]);
+        },
+      });
+
+      if (players.length) {
+        throw new BadRequestError('Player name must be unique');
+      }
+    }
+
+    if (body.email) {
+      const email = body.email.trim().toLowerCase();
+      const playerWithSameEmail = await this.repository.get({ email });
+
+      if (playerWithSameEmail) {
+        throw new BadRequestError('Player email must be unique');
+      }
+    }
+    return this.repository.update(id, body);
+  }
+
   async create(body) {
     const player = new Player(body);
     const players = await this.repository.list({
