@@ -2,6 +2,12 @@ const format = require('date-fns/format');
 const BaseModel = require('./base-model');
 const { BadRequestError } = require('../static/errors');
 
+/**
+ * Ensure match score > 0 and not NaN or return false
+ *
+ * @param {Number} score
+ * @returns
+ */
 const validScore = (score) => {
   const parsed = Number.parseInt(score, 10);
   if (Number.isNaN(parsed) || parsed < 0) {
@@ -10,6 +16,15 @@ const validScore = (score) => {
   return parsed;
 };
 
+/**
+ * Handle match penalty calculation
+ * To avoid losing more point than elo
+ * And to prevent match loser from beeing penalized
+ *
+ * @param {Number} penalty
+ * @param {*} { playerEloPenalty, playerElo }
+ * @returns
+ */
 const computePenalty = (penalty, { playerEloPenalty, playerElo }) => {
   const initialp1 = playerEloPenalty || 0;
   let cleanPenalty = penalty - initialp1;
@@ -37,6 +52,11 @@ class Match extends BaseModel {
     }
   }
 
+  /**
+   * Ensure match is completed
+   *
+   * @memberof Match
+   */
   validMatch() {
     const ft = validScore(this.ft);
     if (ft === false || ft === 0) {
@@ -76,6 +96,11 @@ class Match extends BaseModel {
     }
   }
 
+  /**
+   * Cancel match
+   *
+   * @memberof Match
+   */
   cancel() {
     if (this.moderated_at) {
       throw new BadRequestError('Can not cancel moderated match');
@@ -83,6 +108,11 @@ class Match extends BaseModel {
     this.is_canceled = true;
   }
 
+  /**
+   * Moderate match
+   *
+   * @memberof Match
+   */
   moderate() {
     if (!this.completed_at) {
       throw new BadRequestError('Can not moderate not completed match');
@@ -92,6 +122,12 @@ class Match extends BaseModel {
     this.updated_at = this.moderated_at;
   }
 
+  /**
+   * Undo moderation
+   *
+   * @returns
+   * @memberof Match
+   */
   unmoderate() {
     if (!this.moderated_at) {
       throw new BadRequestError('Can not unmoderate not moderated match');
@@ -108,6 +144,13 @@ class Match extends BaseModel {
     return { player1Elo, player2Elo };
   }
 
+  /**
+   * Compute match penalty and return penalty to be applied
+   *
+   * @param {*} { player1_elo_penalty: p1penalty, player2_elo_penalty: p2penalty }
+   * @returns
+   * @memberof Match
+   */
   penalize({ player1_elo_penalty: p1penalty, player2_elo_penalty: p2penalty }) {
     if (!this.moderated_at) {
       throw new BadRequestError('Can not penalize not moderated match');
@@ -148,6 +191,11 @@ class Match extends BaseModel {
     return result;
   }
 
+  /**
+   * Set match completion
+   *
+   * @memberof Match
+   */
   complete() {
     this.completed_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
     this.updated_at = this.completed_at;
@@ -169,6 +217,12 @@ class Match extends BaseModel {
     return false;
   }
 
+  /**
+   * return match result informations
+   *
+   * @returns
+   * @memberof Match
+   */
   getResults() {
     if (!this.completed_at) {
       return false;
