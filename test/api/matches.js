@@ -587,6 +587,91 @@ describe('Match API', () => {
     });
   });
 
+  describe('POST /:matchId/penalize', () => {
+    before(async () => global.test.clear());
+    describe('when match does not exist', () => {
+      it('should return a 404 error', async () => {
+        await global.test.axios.put('/matches/bla/cancel')
+          .then(() => {
+            throw new Error('Unexpected promise resolution');
+          })
+          .catch((err) => {
+            should(err.response).have.property('status', 404);
+          });
+      });
+    });
+
+    describe('when match is not moderated', () => {
+      it('should return a 400 error', async () => {
+        await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
+        await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans' });
+        await global.test.knex('league').insert({
+          id: 'ISL2',
+          name: 'International Superstar League',
+          rank_treshold: 1000,
+          winning_base_elo: 700,
+          losing_base_elo: 700,
+          starting_elo: 2000,
+          rank_diff_ratio: 100,
+          ragequit_penalty: 500,
+        });
+        await global.test.knex('match').insert({
+          id: 'nicematch',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          league_id: 'ISL2',
+          ft: 10,
+        });
+        await global.test.axios.post('/matches/nicematch/penalize')
+          .then(() => {
+            throw new Error('Unexpected promise resolution');
+          })
+          .catch((err) => {
+            should(err.response).have.property('status', 400);
+          });
+      });
+    });
+
+    describe('when match is moderated', () => {
+      it('should apply penalty', async () => {
+        const body = {
+          league_id: 'ISL2',
+          player1_id: 'Knee',
+          player2_id: 'Qudans',
+          player1_score: 10,
+          player2_score: 2,
+          ft: 10,
+        };
+        const req = await global.test.axios.post('/matches', body);
+        await global.test.axios.put(`/matches/${req.data.id}/moderate`);
+
+        const penalty = {
+          player1_elo_penalty: 233,
+        };
+        const request = await global.test.axios.post(`/matches/${req.data.id}/penalize`, penalty);
+        should(request.data).have.property('player1_elo_penalty', 233);
+
+        const kneeElo = await global.test.knex('elo')
+          .where({ player_id: 'Knee', league_id: 'ISL2' });
+
+        should(kneeElo).be.an.Array().with.lengthOf(1);
+        should(kneeElo[0]).have.property('value', 2000);
+
+        const penalty2 = {
+          player2_elo_penalty: 100,
+        };
+        const request2 = await global.test.axios.post(`/matches/${req.data.id}/penalize`, penalty2);
+        should(request2.data).have.property('player2_elo_penalty', 100);
+
+        const qdansElo = await global.test.knex('elo')
+          .where({ player_id: 'Qudans', league_id: 'ISL2' });
+
+        should(qdansElo).be.an.Array().with.lengthOf(1);
+        should(qdansElo[0]).have.property('value', 2000 - 233 - 100);
+      });
+    });
+  });
+
   describe('GET /matches', () => {
     describe('when there is no matches', () => {
       before(async () => {

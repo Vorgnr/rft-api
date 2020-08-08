@@ -53,6 +53,16 @@ const matches = (controllers) => {
     }
   });
 
+  router.post('/:matchId/penalize', async (req, res) => {
+    try {
+      mustBeAdmin(req);
+      const match = await controllers.MatchController.penalize(req.params.matchId, req.body);
+      res.json(match);
+    } catch (error) {
+      errorHander(error, res);
+    }
+  });
+
   router.get('/', async (req, res) => {
     try {
       const {

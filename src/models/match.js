@@ -74,6 +74,37 @@ class Match extends BaseModel {
     this.updated_at = this.moderated_at;
   }
 
+  penalize({ player1_elo_penalty: p1penalty, player2_elo_penalty: p2penalty, comment }) {
+    if (!this.moderated_at) {
+      throw new BadRequestError('Can not penalize not moderated match');
+    }
+
+    this.comment = comment;
+    const result = { shouldDistribute: false, values: [] };
+    if (p1penalty > 0) {
+      result.shouldDistribute = true;
+      this.player1_elo_penalty = p1penalty;
+      this.player1_elo -= p1penalty;
+      result.values.push({
+        league_id: this.league_id,
+        player_id: this.player1_id,
+        penalty: p1penalty,
+      });
+    }
+
+    if (p2penalty > 0) {
+      result.shouldDistribute = true;
+      this.player2_elo_penalty = p2penalty;
+      this.player2_elo -= p2penalty;
+      result.values.push({
+        league_id: this.league_id,
+        player_id: this.player2_id,
+        penalty: p2penalty,
+      });
+    }
+    return result;
+  }
+
   complete() {
     this.completed_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
     this.updated_at = this.completed_at;
@@ -147,6 +178,9 @@ class Match extends BaseModel {
       'player1_forfeit',
       'player2_ragequit',
       'player2_forfeit',
+      'player1_elo_penalty',
+      'player2_elo_penalty',
+      'comment',
       'is_canceled',
       'video',
       'completed_at',

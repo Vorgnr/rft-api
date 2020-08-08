@@ -1,4 +1,5 @@
 const { NotFoundError } = require('../static/errors');
+const { pick } = require('../utils/object');
 
 class BaseController {
   constructor({ repository, model, controllers = {} }) {
@@ -15,8 +16,13 @@ class BaseController {
     return entity.toJson();
   }
 
-  async update(id, body) {
-    await this.get(id);
+  async update(id, payload) {
+    const entity = await this.get(id);
+    const changedKeys = Object.keys(payload).filter((k) => entity[k] !== payload[k]);
+    if (!changedKeys.length) {
+      return entity;
+    }
+    const body = pick(payload, changedKeys);
     return this.repository.update(id, body);
   }
 

@@ -2,6 +2,7 @@ const BaseController = require('./base-controller');
 const Match = require('../models/match');
 const Player = require('../models/player');
 const { pick, omit } = require('../utils/object');
+const { InternalServerError } = require('../static/errors');
 
 const playerGetElo = (player, elos, league) => {
   const eloss = elos.filter((e) => e.player_id === player.id && e.league_id === league.id);
@@ -116,10 +117,15 @@ class MatchController extends BaseController {
     return new Match({ ...match, ...createdMatch }).toJson();
   }
 
-  async update(id, body) {
+  async update(id, payload) {
     const matchBefore = await this.get(id);
-    const cleanBody = omit(Match.customInternalKeys, body);
-    const match = new Match({ ...matchBefore, ...cleanBody });
+    const cleanBody = omit(Match.customInternalKeys, payload);
+    const changedKeys = Object.keys(payload).filter((k) => matchBefore[k] !== cleanBody[k]);
+    if (!changedKeys.length) {
+      return matchBefore;
+    }
+    const body = pick(cleanBody, changedKeys);
+    const match = new Match({ ...matchBefore, ...body });
     const updatedMatch = await this.repository.update(id, match);
     return new Match({ ...match, ...updatedMatch }).toJson();
   }
@@ -137,6 +143,41 @@ class MatchController extends BaseController {
     match.cancel();
     await this.repository.update(id, match);
     return match.toJson();
+  }
+
+  async penalize(id, body = {}) {
+    const match = new Match(await this.get(id));
+    const {
+      player1_elo_penalty: p1penalty,
+      player2_elo_penalty: p2penalty,
+      comment,
+    } = body;
+    const elo = match.penalize({
+      player1_elo_penalty: p1penalty,
+      player2_elo_penalty: p2penalty,
+      comment,
+    });
+    if (elo.shouldDistribute) {
+      await Promise.all(elo.values.map(async (e) => {
+        const elos = await this.controllers.EloController.list({
+          filters: (builder) => {
+            builder.where('league_id', e.league_id);
+            builder.where('player_id', e.player_id);
+          },
+        });
+
+        if (elos.length !== 1) {
+          throw new InternalServerError('Unexpected elo records count');
+        }
+
+        const current = elos[0];
+        return this.controllers.EloController.update(current.id, {
+          value: current.value - e.penalty,
+        });
+      }));
+      return this.repository.update(id, match);
+    }
+    return match;
   }
 
   async list({
