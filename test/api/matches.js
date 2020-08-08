@@ -530,6 +530,101 @@ describe('Match API', () => {
     });
   });
 
+  describe('PUT /:matchId/unmoderate', () => {
+    before(async () => global.test.clear());
+    describe('when match does not exist', () => {
+      it('should return a 404 error', async () => {
+        await global.test.axios.put('/matches/bla/unmoderate')
+          .then(() => {
+            throw new Error('Unexpected promise resolution');
+          })
+          .catch((err) => {
+            should(err.response).have.property('status', 404);
+          });
+      });
+    });
+
+    describe('when match does exist', () => {
+      describe('when match is not moderated', () => {
+        it('should return a 400 error', async () => {
+          await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
+          await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans' });
+          await global.test.knex('league').insert({ id: 'ISL', name: 'International Superstar League' });
+          await global.test.knex('match').insert({
+            id: 'nicematch',
+            player1_id: 'Knee',
+            player2_id: 'Qudans',
+            league_id: 'ISL',
+            ft: 10,
+          });
+          await global.test.axios.put('/matches/nicematch/unmoderate', { player1_score: 6, player2_score: 6 })
+            .then(() => {
+              throw new Error('Unexpected promise resolution');
+            })
+            .catch((err) => {
+              should(err.response).have.property('status', 400);
+            });
+        });
+      });
+
+      describe('when match is moderated', () => {
+        before(async () => {
+          await global.test.clear();
+          await global.test.knex('player').insert({ id: 'Knee', name: 'Knee' });
+          await global.test.knex('player').insert({ id: 'Qudans', name: 'Qudans' });
+          await global.test.knex('league').insert({
+            id: 'ISL2',
+            name: 'International Superstar League',
+            rank_treshold: 1000,
+            winning_base_elo: 700,
+            losing_base_elo: 700,
+            starting_elo: 2000,
+            rank_diff_ratio: 100,
+            ragequit_penalty: 500,
+          });
+        });
+        it('should unmoderate match', async () => {
+          const body = {
+            league_id: 'ISL2',
+            player1_id: 'Knee',
+            player2_id: 'Qudans',
+            player1_score: 10,
+            player2_score: 2,
+            ft: 10,
+          };
+          const r = await global.test.axios.post('/matches', body);
+          await global.test.axios.put(`/matches/${r.data.id}/moderate`);
+          const request = await global.test.axios.put(`/matches/${r.data.id}/unmoderate`);
+
+          should(request).have.property('status', 200);
+          should(request.data).have.property('moderated_at').which.is.null();
+          should(request.data).have.property('player1_elo', null);
+          should(request.data).have.property('player1_previous_elo', null);
+          should(request.data).have.property('player2_elo', null);
+          should(request.data).have.property('player2_previous_elo', null);
+          const kneeElo = await global.test.knex('elo')
+            .where({ player_id: 'Knee', league_id: 'ISL2' });
+
+          should(kneeElo).be.an.Array().with.lengthOf(1);
+          should(kneeElo[0]).have.property('value', 2000);
+          should(kneeElo[0]).have.property('played_matches', 0);
+
+          const qudansElo = await global.test.knex('elo')
+            .where({ player_id: 'Qudans', league_id: 'ISL2' });
+
+          should(qudansElo).be.an.Array().with.lengthOf(1);
+          should(qudansElo[0]).have.property('value', 2000);
+          should(qudansElo[0]).have.property('played_matches', 0);
+
+          const match = await global.test.knex('match')
+            .where({ id: r.data.id });
+
+          should(match[0]).have.property('moderated_at').which.is.null();
+        });
+      });
+    });
+  });
+
   describe('PUT /:matchId/cancel', () => {
     before(async () => global.test.clear());
     describe('when match does not exist', () => {

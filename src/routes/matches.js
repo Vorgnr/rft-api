@@ -43,6 +43,16 @@ const matches = (controllers) => {
     }
   });
 
+  router.put('/:matchId/unmoderate', async (req, res) => {
+    try {
+      mustBeAdmin(req);
+      const match = await controllers.MatchController.unmoderate(req.params.matchId);
+      res.json(match);
+    } catch (error) {
+      errorHander(error, res);
+    }
+  });
+
   router.put('/:matchId/cancel', async (req, res) => {
     try {
       mustBeAdmin(req);

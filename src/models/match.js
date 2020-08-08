@@ -74,6 +74,22 @@ class Match extends BaseModel {
     this.updated_at = this.moderated_at;
   }
 
+  unmoderate() {
+    if (!this.moderated_at) {
+      throw new BadRequestError('Can not unmoderate not moderated match');
+    }
+
+    const { player1_elo: player1Elo, player2_elo: player2Elo } = this;
+
+    this.moderated_at = null;
+    this.player1_elo = null;
+    this.player1_previous_elo = null;
+    this.player2_previous_elo = null;
+    this.player2_elo = null;
+    this.updated_at = this.moderated_at;
+    return { player1Elo, player2Elo };
+  }
+
   penalize({ player1_elo_penalty: p1penalty, player2_elo_penalty: p2penalty, comment }) {
     if (!this.moderated_at) {
       throw new BadRequestError('Can not penalize not moderated match');

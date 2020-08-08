@@ -138,6 +138,26 @@ class MatchController extends BaseController {
     return new Match({ ...match, ...updatedMatch }).toJson();
   }
 
+  async unmoderate(id) {
+    const match = new Match(await this.get(id));
+    const { player1Elo, player2Elo } = match.unmoderate();
+    const elos = await this.controllers.EloController.list({
+      filters: (builder) => {
+        builder.where('league_id', match.league_id);
+        builder.where('player_id', 'in', [match.player1_id, match.player2_id]);
+      },
+    });
+    if (elos.length !== 2) {
+      throw new InternalServerError('Unexpected elo records count');
+    }
+    await Promise.all(elos.map(async (elo) => this.controllers.EloController.update(elo.id, {
+      value: elo.value - (elo.player_id === match.player1_id ? player1Elo : player2Elo),
+      played_matches: elo.played_matches - 1,
+    })));
+    await this.repository.update(id, match);
+    return new Match({ ...match }).toJson();
+  }
+
   async cancel(id) {
     const match = new Match(await this.get(id));
     match.cancel();
