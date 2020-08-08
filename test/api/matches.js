@@ -682,7 +682,7 @@ describe('Match API', () => {
     });
   });
 
-  describe.only('POST /:matchId/penalize', () => {
+  describe('POST /:matchId/penalize', () => {
     before(async () => global.test.clear());
     describe('when match does not exist', () => {
       it('should return a 404 error', async () => {
