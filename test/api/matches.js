@@ -682,7 +682,7 @@ describe('Match API', () => {
     });
   });
 
-  describe('POST /:matchId/penalize', () => {
+  describe.only('POST /:matchId/penalize', () => {
     before(async () => global.test.clear());
     describe('when match does not exist', () => {
       it('should return a 404 error', async () => {
@@ -728,6 +728,7 @@ describe('Match API', () => {
     });
 
     describe('when match is moderated', () => {
+      let matchId = null;
       it('should apply penalty', async () => {
         const body = {
           league_id: 'ISL2',
@@ -738,12 +739,27 @@ describe('Match API', () => {
           ft: 10,
         };
         const req = await global.test.axios.post('/matches', body);
-        await global.test.axios.put(`/matches/${req.data.id}/moderate`);
+        matchId = req.data.id;
+        await global.test.axios.put(`/matches/${matchId}/moderate`);
 
+        const penalty = {
+          player1_elo_penalty: 232,
+        };
+        const request = await global.test.axios.post(`/matches/${matchId}/penalize`, penalty);
+        should(request.data).have.property('player1_elo_penalty', 232);
+
+        const kneeElo = await global.test.knex('elo')
+          .where({ player_id: 'Knee', league_id: 'ISL2' });
+
+        should(kneeElo).be.an.Array().with.lengthOf(1);
+        should(kneeElo[0]).have.property('value', 2001);
+      });
+
+      it('should penalize more than elo', async () => {
         const penalty = {
           player1_elo_penalty: 233,
         };
-        const request = await global.test.axios.post(`/matches/${req.data.id}/penalize`, penalty);
+        const request = await global.test.axios.post(`/matches/${matchId}/penalize`, penalty);
         should(request.data).have.property('player1_elo_penalty', 233);
 
         const kneeElo = await global.test.knex('elo')
@@ -751,18 +767,34 @@ describe('Match API', () => {
 
         should(kneeElo).be.an.Array().with.lengthOf(1);
         should(kneeElo[0]).have.property('value', 2000);
+      });
 
+      it('should penalize multiple times', async () => {
+        const penalty = {
+          player1_elo_penalty: 500,
+        };
+        const request = await global.test.axios.post(`/matches/${matchId}/penalize`, penalty);
+        should(request.data).have.property('player1_elo_penalty', 233);
+
+        const kneeElo = await global.test.knex('elo')
+          .where({ player_id: 'Knee', league_id: 'ISL2' });
+
+        should(kneeElo).be.an.Array().with.lengthOf(1);
+        should(kneeElo[0]).have.property('value', 2000);
+      });
+
+      it('should not penalize loosers', async () => {
         const penalty2 = {
           player2_elo_penalty: 100,
         };
-        const request2 = await global.test.axios.post(`/matches/${req.data.id}/penalize`, penalty2);
-        should(request2.data).have.property('player2_elo_penalty', 100);
+        const request2 = await global.test.axios.post(`/matches/${matchId}/penalize`, penalty2);
+        should(request2.data).have.property('player2_elo_penalty', null);
 
         const qdansElo = await global.test.knex('elo')
           .where({ player_id: 'Qudans', league_id: 'ISL2' });
 
         should(qdansElo).be.an.Array().with.lengthOf(1);
-        should(qdansElo[0]).have.property('value', 2000 - 233 - 100);
+        should(qdansElo[0]).have.property('value', 2000 - 233);
       });
     });
   });

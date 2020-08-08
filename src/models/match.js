@@ -10,6 +10,24 @@ const validScore = (score) => {
   return parsed;
 };
 
+const computePenalty = (penalty, { playerEloPenalty, playerElo }) => {
+  const initialp1 = playerEloPenalty || 0;
+  let cleanPenalty = penalty - initialp1;
+  if (cleanPenalty > playerElo) {
+    cleanPenalty = playerElo;
+  }
+
+  if (cleanPenalty < 0) {
+    cleanPenalty = 0;
+  }
+
+  return {
+    penalty: cleanPenalty,
+    playerEloPenalty: initialp1 + cleanPenalty,
+    playerElo: playerElo - cleanPenalty,
+  };
+};
+
 class Match extends BaseModel {
   constructor(body = {}) {
     super(body);
@@ -90,33 +108,42 @@ class Match extends BaseModel {
     return { player1Elo, player2Elo };
   }
 
-  penalize({ player1_elo_penalty: p1penalty, player2_elo_penalty: p2penalty, comment }) {
+  penalize({ player1_elo_penalty: p1penalty, player2_elo_penalty: p2penalty }) {
     if (!this.moderated_at) {
       throw new BadRequestError('Can not penalize not moderated match');
     }
 
-    this.comment = comment;
     const result = { shouldDistribute: false, values: [] };
-    if (p1penalty > 0) {
+    const computedP1penalty = computePenalty(p1penalty, {
+      playerEloPenalty: this.player1_elo_penalty,
+      playerElo: this.player1_elo,
+    });
+
+    if (computedP1penalty.penalty > 0) {
       result.shouldDistribute = true;
-      this.player1_elo_penalty = p1penalty;
-      this.player1_elo -= p1penalty;
       result.values.push({
         league_id: this.league_id,
         player_id: this.player1_id,
-        penalty: p1penalty,
+        penalty: computedP1penalty.penalty,
       });
+      this.player1_elo_penalty = computedP1penalty.playerEloPenalty;
+      this.player1_elo = computedP1penalty.playerElo;
     }
 
-    if (p2penalty > 0) {
+    const computedP2penalty = computePenalty(p2penalty, {
+      playerEloPenalty: this.player2_elo_penalty,
+      playerElo: this.player2_elo,
+    });
+
+    if (computedP2penalty.penalty > 0) {
       result.shouldDistribute = true;
-      this.player2_elo_penalty = p2penalty;
-      this.player2_elo -= p2penalty;
       result.values.push({
         league_id: this.league_id,
         player_id: this.player2_id,
-        penalty: p2penalty,
+        penalty: computedP2penalty.penalty,
       });
+      this.player2_elo_penalty = computedP2penalty.playerEloPenalty;
+      this.player2_elo = computedP2penalty.playerElo;
     }
     return result;
   }
