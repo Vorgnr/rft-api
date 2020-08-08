@@ -140,7 +140,7 @@ class Match extends BaseModel {
     this.player1_previous_elo = null;
     this.player2_previous_elo = null;
     this.player2_elo = null;
-    this.updated_at = this.moderated_at;
+    this.updated_at = format(Date.now(), 'yyyy-MM-dd HH:mm:ss');
     return { player1Elo, player2Elo };
   }
 
