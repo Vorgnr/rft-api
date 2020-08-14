@@ -42,8 +42,17 @@ const leagues = (controllers) => {
         filters.is_active = true;
       }
       if (name) filters.name = name;
+      let cleanOrderBy;
+      if (orderBy) {
+        cleanOrderBy = orderBy;
+      } else {
+        cleanOrderBy = [
+          { column: 'is_active', order: 'desc' },
+          { column: 'created_at', order: 'desc' },
+        ];
+      }
       const results = await controllers.LeagueController.list({
-        page, perPage, filters, orderBy,
+        page, perPage, filters, orderBy: cleanOrderBy,
       });
       res.json(results);
     } catch (error) {
